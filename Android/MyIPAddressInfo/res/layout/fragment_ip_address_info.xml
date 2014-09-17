@@ -1,0 +1,162 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.adamkruger.myipaddressinfo.MainActivity$IPAddressInfoFragment" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/lastUpdateTime"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" >
+
+	    <TableLayout
+	        android:id="@+id/tableLayout1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" >
+	
+	        <TableRow
+	            android:id="@+id/tableRowIpAdress"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:background="#3D3C3A" >
+	
+	            <TextView
+	                android:id="@+id/ipLabel"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:text="@string/label_ip"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#F88158" />
+	
+	            <TextView
+	                android:id="@+id/ipValue"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#E5E4E2" />
+	        </TableRow>
+	
+	        <TableRow
+	            android:id="@+id/tableRowCountry"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content" >
+	
+	            <TextView
+	                android:id="@+id/countryLabel"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:text="@string/label_country"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#54C571" />
+	
+	            <TextView
+	                android:id="@+id/countryValue"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#E5E4E2" />
+	        </TableRow>
+	
+	        <TableRow
+	            android:id="@+id/tableRowCity"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="#3D3C3A" >
+	
+	            <TextView
+	                android:id="@+id/cityLabel"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:text="@string/label_city"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#C454A8" />
+	
+	            <TextView
+	                android:id="@+id/cityValue"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#E5E4E2" />
+	        </TableRow>
+	
+	        <TableRow
+	            android:id="@+id/tableRowRegion"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" >
+	
+	            <TextView
+	                android:id="@+id/regionLabel"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:text="@string/label_region"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#4EE2EC" />
+	
+	            <TextView
+	                android:id="@+id/regionValue"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#E5E4E2" />
+	        </TableRow>
+	        
+	        <TableRow
+	            android:id="@+id/tableRowCoordinates"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="#3D3C3A" >
+	
+	            <TextView
+	                android:id="@+id/coordinatesLabel"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:text="@string/label_coordinates"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#F75D59" />
+	
+	            <TextView
+	                android:id="@+id/coordinatesValue"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:padding="12dp"
+	                android:textAppearance="?android:attr/textAppearanceLarge"
+	                android:textColor="#E5E4E2" />
+
+	        </TableRow>
+	        
+	    </TableLayout>
+    
+    </ScrollView>
+    
+    <TextView
+        android:id="@+id/lastUpdateTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/lastUpdateStatus"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#E5E4E2" />
+
+    <TextView
+        android:id="@+id/lastUpdateStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#E5E4E2" />
+
+</RelativeLayout>
