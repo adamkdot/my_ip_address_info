@@ -57,6 +57,7 @@ public class IPAddressInfoFragment extends Fragment
 	private boolean mLastUpdateSucceeded;
 	private long mLastUpdateElapsedTimeMs;
 	private String mLastUpdateTime;
+	private int mDefaultLastUpdateTimeColor;
 	
     public IPAddressInfoFragment() {
     }
@@ -81,6 +82,7 @@ public class IPAddressInfoFragment extends Fragment
         	((TextView)rootView.findViewById(R.id.coordinatesValue)).setTextIsSelectable(true);
         }
         rootView.findViewById(R.id.coordinatesValue).setOnClickListener(this);
+        mDefaultLastUpdateTimeColor = ((TextView)rootView.findViewById(R.id.lastUpdateTime)).getTextColors().getDefaultColor();
         return rootView;
     }
     
@@ -107,6 +109,12 @@ public class IPAddressInfoFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
     	super.onActivityCreated(savedInstanceState);
+    	updateViewState();
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
     	updateViewState();
     }
     
@@ -141,8 +149,16 @@ public class IPAddressInfoFragment extends Fragment
 	        		lastUpdateStatus.setTextColor(Color.RED);
 	        	}
 	
-	        	((TextView)view.findViewById(R.id.lastUpdateTime)).setText(
+	        	TextView lastUpdateTime = (TextView)view.findViewById(R.id.lastUpdateTime);
+	        	lastUpdateTime.setText(
 	        			String.format(getResources().getString(R.string.last_update_time), mLastUpdateTime));
+	        	String currentTime = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date());
+		    	if (currentTime.equals(mLastUpdateTime)) {
+		    		lastUpdateTime.setTextColor(mDefaultLastUpdateTimeColor);
+		    	} else {
+		    		lastUpdateTime.setTextColor(Color.YELLOW);
+		    	}
+	        	
         	}
     	}
     }
