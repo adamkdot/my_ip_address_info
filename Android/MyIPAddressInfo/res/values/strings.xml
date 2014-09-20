@@ -14,5 +14,11 @@
     <string name="last_update_status_timeout">Request timed out after %d s</string>
     <string name="last_update_time">Last updated at %s</string>
     <string name="loading_message">Loading&#8230;</string>
+    <string name="proxy_settings_title">Local HTTP Proxy Port</string>
+    <string name="proxy_settings_radio_none">No proxy</string>
+    <string name="proxy_settings_radio_psiphon">Psiphon (8080)</string>
+    <string name="proxy_settings_radio_tor">Orbot (8118)</string>
+    <string name="proxy_settings_radio_custom">Custom port</string>
+    <string name="proxy_settings_custom_port">Port</string>
 
 </resources>

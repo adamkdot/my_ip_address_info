@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
@@ -42,12 +43,14 @@ public class AsyncHTTPRequest extends AsyncTask<String, String, String> {
 	static final int CONNECTION_TIMEOUT_SECONDS = 20;
 	static final int READ_TIMEOUT_SECONDS = 10;
 
-	long mElapsedTime = 0;
-	boolean mTimedOut = false;
+	private long mElapsedTime = 0;
+	private boolean mTimedOut = false;
 	private WeakReference<RequestTaskCaller> mCallerWeakRef;
+	private Proxy mProxySettings;
 
-	public AsyncHTTPRequest(RequestTaskCaller caller) {
+	public AsyncHTTPRequest(RequestTaskCaller caller, Proxy proxySettings) {
 		this.mCallerWeakRef = new WeakReference<RequestTaskCaller>(caller);
+		mProxySettings = proxySettings;
 	}
 
 	@Override
@@ -58,7 +61,7 @@ public class AsyncHTTPRequest extends AsyncTask<String, String, String> {
 		long startTime = SystemClock.elapsedRealtime();
 		try {
 			url = new URL(uri[0]);
-			httpUrlConnection = (HttpURLConnection) url.openConnection();
+			httpUrlConnection = (HttpURLConnection) url.openConnection(mProxySettings);
 			httpUrlConnection
 					.setConnectTimeout(CONNECTION_TIMEOUT_SECONDS * 1000);
 			httpUrlConnection.setReadTimeout(READ_TIMEOUT_SECONDS * 1000);

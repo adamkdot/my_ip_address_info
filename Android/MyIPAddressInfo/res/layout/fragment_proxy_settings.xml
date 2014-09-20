@@ -1,0 +1,94 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/proxySettingsLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/proxySettingsHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" >
+
+        <TextView
+            android:id="@+id/proxySettingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/heading_padding"
+            android:text="@string/proxy_settings_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" 
+            android:textColor="@color/heading_color_1" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/proxySettingsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/proxySettingsHeader"
+        android:fadeScrollbars="false" >
+
+        <RadioGroup
+            android:id="@+id/proxySettingsRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:checkedButton="@+id/proxySettingsRadioNone" >
+
+            <RadioButton
+                android:id="@+id/proxySettingsRadioNone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/proxy_settings_radio_none"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <RadioButton
+                android:id="@+id/proxySettingsRadioTor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/proxy_settings_radio_tor"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <RadioButton
+                android:id="@+id/proxySettingsRadioPsiphon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/proxy_settings_radio_psiphon"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <RadioButton
+                android:id="@+id/proxySettingsRadioCustom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/proxy_settings_radio_custom"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical" >
+
+                <EditText
+                    android:id="@+id/proxySettingsCustomPort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="5"
+                    android:textColor="@color/dark_text_color"
+                    android:hint="@string/proxy_settings_custom_port"
+                    android:textColorHint="@color/dark_text_hint_color"
+                    android:singleLine="true"
+                    android:inputType="number"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                
+            </LinearLayout>
+            
+        </RadioGroup>
+        
+    </ScrollView>
+
+</RelativeLayout>

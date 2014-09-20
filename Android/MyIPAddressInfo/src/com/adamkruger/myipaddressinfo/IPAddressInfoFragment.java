@@ -20,6 +20,8 @@
 package com.adamkruger.myipaddressinfo;
 
 import java.lang.ref.WeakReference;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -29,11 +31,13 @@ import org.json.JSONObject;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -178,9 +182,24 @@ public class IPAddressInfoFragment extends Fragment
     		return;
     	}
 
-    	AsyncHTTPRequest ipAddressRequestTask = new AsyncHTTPRequest(this);
+    	AsyncHTTPRequest ipAddressRequestTask = new AsyncHTTPRequest(this, getProxySettings());
 		this.mRequestTaskWeakRef = new WeakReference<AsyncHTTPRequest>(ipAddressRequestTask);
 		ipAddressRequestTask.execute(IP_ADDRESS_INFO_REQUEST_URL);
+    }
+    
+    private Proxy getProxySettings() {
+    	Proxy proxySettings = Proxy.NO_PROXY;
+    	
+    	SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+    	boolean useProxy = preferences.getBoolean(getResources().getString(R.string.PREFERENCE_USE_PROXY), false);
+    	
+    	if (useProxy) {
+    		int proxyPort = preferences.getInt(getResources().getString(R.string.PREFERENCE_PROXY_PORT), 0);
+    		InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("127.0.0.1", proxyPort);
+    		proxySettings = new Proxy(Proxy.Type.HTTP, socketAddress);
+    	}
+    	
+    	return proxySettings;
     }
     
     private boolean IPAddressRequestTaskIsPendingOrRunning() {

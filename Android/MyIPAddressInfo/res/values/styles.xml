@@ -16,5 +16,17 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
-
+    <color name="background_color">#848482</color>
+    <color name="background_color_dark">#3D3C3A</color>
+    <color name="background_color_light">#A4A4A2</color>
+    <color name="heading_color_1">#FFD4A3</color>
+    <color name="heading_color_2">#0C435A</color>
+    <color name="heading_color_3">#D36247</color>
+    <color name="heading_color_4">#09672F</color>
+    <color name="heading_color_5">#F5B873</color>
+    <color name="light_text_color">#E5E4E2</color>
+    <color name="dark_text_color">#1D1C1A</color>
+    <color name="dark_text_hint_color">#5D5C5A</color>
+    <dimen name="heading_padding">10dp</dimen>
+    
 </resources>

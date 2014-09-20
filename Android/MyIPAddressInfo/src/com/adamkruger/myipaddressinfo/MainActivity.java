@@ -24,11 +24,14 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 public class MainActivity extends ActionBarActivity {
 
 	private static final String TAG_IP_ADDRESS_INFO_FRAGMENT = "ip_address_info_fragment";
+	private static final String TAG_PROXY_SETTINGS_FRAGMENT = "proxy_settings_fragment";
 	private IPAddressInfoFragment mIPAddressInfoFragment;
+	private ProxySettingsFragment mProxySettingsFragment;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +40,30 @@ public class MainActivity extends ActionBarActivity {
         
         FragmentManager fragmentManager = getSupportFragmentManager();
         mIPAddressInfoFragment = (IPAddressInfoFragment)fragmentManager.findFragmentByTag(TAG_IP_ADDRESS_INFO_FRAGMENT);
+        mProxySettingsFragment = (ProxySettingsFragment)fragmentManager.findFragmentByTag(TAG_PROXY_SETTINGS_FRAGMENT);
 
         if (mIPAddressInfoFragment == null) {
         	mIPAddressInfoFragment = new IPAddressInfoFragment();
         	fragmentManager.beginTransaction()
-                    .add(R.id.container, mIPAddressInfoFragment, TAG_IP_ADDRESS_INFO_FRAGMENT)
+                    .add(R.id.ip_address_info_container, mIPAddressInfoFragment, TAG_IP_ADDRESS_INFO_FRAGMENT)
                     .commit();
+        }
+        
+        if (mProxySettingsFragment == null) {
+        	mProxySettingsFragment = new ProxySettingsFragment();
+        	fragmentManager.beginTransaction()
+        			.add(R.id.other_info_container, mProxySettingsFragment, TAG_PROXY_SETTINGS_FRAGMENT)
+        			.commit();
         }
     }
 
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	
+    	getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
