@@ -1,15 +1,15 @@
-my_ip_address_info
-==================
+My IP and more
+==============
 
 Overview
-------------------
+--------------
 
 A simple Android app for querying your external (public) IP address, country, and more.
 
 This app makes HTTP requests to [freegeoip.net](http://freegeoip.net/). That service includes GeoLite data created by MaxMind, available from [maxmind.com](http://www.maxmind.com/).
 
 License
-------------------
+--------------
 
 Please see the LICENSE file.
 
@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 
 Contacts
-------------------
+--------------
 
 adamkrugerdotcom at gmail dot com
 
