@@ -3,7 +3,7 @@
 
     <string name="app_name">آی پی من و بیشتر</string>
     <string name="action_settings">تنظیمات</string>
-    <string name="action_refresh">Refresh</string>
+    <string name="action_refresh">بارگذاری مجدد</string>
     <string name="label_ip">آدرس آی پی</string>
     <string name="label_country">کشور</string>
     <string name="label_city">شهر</string>
@@ -12,9 +12,9 @@
     <string name="last_update_status_success">درخواست در %d میلی ثانیه انجام شد.</string>
     <string name="last_update_status_fail">درخواست بعد از %d میلی ثانیه ناموفق بود.</string>
     <string name="last_update_status_timeout">درخواست بعد از %d ثانیه به موفقت انجام نشد.</string>
-    <string name="last_update_time">آخرین به روز رسانی در %s</string>
+    <string name="last_update_time">آخرین به روز رسانی %s</string>
     <string name="loading_message">در حال بارگذاری&#8230;</string>
-    <string name="proxy_settings_title">پورت پراکسی  دستگاه</string>
+    <string name="proxy_settings_title">اتنخاب پورت و نحوه پراکسی</string>
     <string name="proxy_settings_radio_none">بدون پروکسی</string>
     <string name="proxy_settings_radio_psiphon">سایفون پورت 8080</string>
     <string name="proxy_settings_radio_tor">اربوت پورت 8118</string>
