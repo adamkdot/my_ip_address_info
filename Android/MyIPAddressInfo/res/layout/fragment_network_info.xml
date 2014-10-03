@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/networkInfoLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/networkInfoHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" >
+
+        <TextView
+            android:id="@+id/networkInfoTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/heading_padding"
+            android:text="@string/network_info_title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/heading_color_1" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/networkInfoScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/networkInfoHeader"
+        android:fadeScrollbars="false" >
+
+        <TableLayout
+            android:id="@+id/networkInfoTableLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
+    </ScrollView>
+
+</RelativeLayout>
