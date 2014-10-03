@@ -29,6 +29,7 @@
     <color name="dark_text_color">#1D1C1A</color>
     <color name="dark_text_hint_color">#5D5C5A</color>
     <dimen name="heading_padding">10dp</dimen>
+    <dimen name="label_value_padding">5dp</dimen>
     
     <style name="CustomCirclePageIndicator">
         <item name="fillColor">@color/light_text_color</item>
