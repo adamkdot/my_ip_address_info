@@ -2,24 +2,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:baselineAligned="true"
+    android:orientation="horizontal"
     tools:context="com.adamkruger.myipaddressinfo.MainActivity" >
-    
-<FrameLayout
-    android:id="@+id/ip_address_info_container"
-    android:layout_width="0px"
-    android:layout_height="match_parent"
-    android:layout_weight="3"
-    android:background="@color/background_color" />
 
-<FrameLayout
-    android:id="@+id/other_info_container"
-    android:layout_width="0px"
-    android:layout_height="match_parent"
-    android:layout_weight="2"
-    android:background="@color/background_color_light" >
+    <FrameLayout
+        android:id="@+id/ip_address_info_container"
+        android:layout_width="0px"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:background="@color/background_color" />
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:background="@color/background_color_light"
+        android:orientation="vertical" >
+
+        <com.viewpagerindicator.CirclePageIndicator
+            android:id="@+id/other_info_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/heading_padding" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/other_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
 
 </LinearLayout>

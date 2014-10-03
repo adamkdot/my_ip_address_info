@@ -2,4 +2,5 @@
 <resources>
     <string name="PREFERENCE_USE_PROXY">PREFERENCE_USE_PROXY</string>
     <string name="PREFERENCE_PROXY_PORT">PREFERENCE_PROXY_PORT</string>
+    <string name="PREFERENCE_ADDITIONAL_INFO_PAGE">PREFERENCE_ADDITIONAL_INFO_PAGE</string>
 </resources>
