@@ -20,6 +20,8 @@
     <string name="proxy_settings_radio_tor">Orbot (8118)</string>
     <string name="proxy_settings_radio_custom">Custom port</string>
     <string name="proxy_settings_custom_port">Port</string>
-    <string name="network_info_title">Network Information</string>
+    <string name="network_info_title">Network Interface</string>
+    <string name="network_info_label_MTU">MTU</string>
+    <string name="network_info_label_DNS">DNS</string>
 
 </resources>

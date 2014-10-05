@@ -19,9 +19,24 @@
 
 package com.adamkruger.myipaddressinfo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.http.conn.util.InetAddressUtils;
+
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -70,8 +85,40 @@ public class NetworkInfoFragment extends Fragment {
                 reason = "";
             }
             addTableRow(context, mNetworkInfoTableLayout, networkInfo.getTypeName(), state);
-            addTableRow(context, mNetworkInfoTableLayout, networkInfo.getSubtypeName(), detailedState);
-            addTableRow(context, mNetworkInfoTableLayout, networkInfo.getExtraInfo(), reason);
+            addTableRow(context, mNetworkInfoTableLayout, networkInfo.getSubtypeName(), networkInfo.getExtraInfo());
+            addTableRow(context, mNetworkInfoTableLayout, reason, detailedState);
+        }
+
+        boolean printedLabel = false;
+
+        for (NetworkInterfaceInfo networkInterfaceInfo : getNetworkInterfaceInfos()) {
+            mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
+
+            printedLabel = false;
+            for (String ipAddress : networkInterfaceInfo.ipAddresses) {
+                addTableRow(context, mNetworkInfoTableLayout, printedLabel ? "" : networkInterfaceInfo.name, ipAddress);
+                printedLabel = true;
+            }
+
+            if (networkInterfaceInfo.MAC.length() > 0) {
+                addTableRow(context, mNetworkInfoTableLayout, "", networkInterfaceInfo.MAC);
+            }
+
+            if (networkInterfaceInfo.MTU != -1) {
+                addTableRow(context, mNetworkInfoTableLayout, "",
+                        String.format("%s: %d", context.getString(R.string.network_info_label_MTU), networkInterfaceInfo.MTU));
+            }
+        }
+
+        printedLabel = false;
+        List<String> DNSes = getActiveNetworkDnsResolvers(context);
+        if (DNSes.size() > 0) {
+            mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
+        }
+        for (String DNS : DNSes) {
+            addTableRow(context, mNetworkInfoTableLayout, printedLabel ? "" : context.getString(R.string.network_info_label_DNS),
+                    DNS);
+            printedLabel = true;
         }
     }
 
@@ -113,5 +160,127 @@ public class NetworkInfoFragment extends Fragment {
         tableRow.addView(labelTextView);
         tableRow.addView(valueTextView);
         return tableRow;
+    }
+
+    private TableRow makeTableRowSpacer(Context context) {
+        TableRow tableRow = new TableRow(context);
+        View spacerView = new View(context);
+        spacerView.setLayoutParams(new TableRow.LayoutParams(1, 16));
+        tableRow.addView(spacerView);
+        return tableRow;
+    }
+
+    private static class NetworkInterfaceInfo {
+        public String name;
+        public ArrayList<String> ipAddresses;
+        public String MAC;
+        public int MTU;
+
+        public NetworkInterfaceInfo() {
+            name = "";
+            ipAddresses = new ArrayList<String>();
+            MAC = "";
+            MTU = -1;
+        }
+    }
+
+    // Adapted from
+    // http://stackoverflow.com/questions/6064510/how-to-get-ip-address-of-the-device
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    private static List<NetworkInterfaceInfo> getNetworkInterfaceInfos() {
+        List<NetworkInterfaceInfo> networkInterfaceInfos = new ArrayList<NetworkInterfaceInfo>();
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface networkInterface : interfaces) {
+                NetworkInterfaceInfo networkInterfaceInfo = new NetworkInterfaceInfo();
+                networkInterfaceInfo.name = networkInterface.getDisplayName();
+                if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
+                    byte[] MAC = networkInterface.getHardwareAddress();
+                    if (MAC != null) {
+                        StringBuilder stringBuilder = new StringBuilder(18);
+                        for (byte b : MAC) {
+                            if (stringBuilder.length() > 0) {
+                                stringBuilder.append(':');
+                            }
+                            stringBuilder.append(String.format("%02x", b));
+                        }
+                        networkInterfaceInfo.MAC = stringBuilder.toString();
+                    }
+
+                    networkInterfaceInfo.MTU = networkInterface.getMTU();
+                }
+                List<InetAddress> addresses = Collections.list(networkInterface.getInetAddresses());
+                for (InetAddress address : addresses) {
+                    if (!address.isLoopbackAddress()) {
+                        networkInterfaceInfo.ipAddresses.add(InetAddressToString(address));
+                    }
+                }
+                if (networkInterfaceInfo.ipAddresses.size() > 0) {
+                    networkInterfaceInfos.add(networkInterfaceInfo);
+                }
+            }
+        } catch (SocketException e) {
+        }
+
+        return networkInterfaceInfos;
+    }
+
+    private static String InetAddressToString(InetAddress address) {
+        String addressString = address.getHostAddress().toUpperCase(Locale.getDefault());
+        if (InetAddressUtils.isIPv4Address(addressString)) {
+            return addressString;
+        } else {
+            int suffixPosition = addressString.indexOf('%');
+            return suffixPosition < 0 ? addressString : addressString.substring(0, suffixPosition);
+        }
+    }
+
+    // Copied and adapted from
+    // https://bitbucket.org/psiphon/psiphon-circumvention-system/src/default/Android/PsiphonAndroidLibrary/src/com/psiphon3/psiphonlibrary/Utils.java?at=default
+    /*
+     * Copyright (c) 2013, Psiphon Inc. All rights reserved.
+     * 
+     * This program is free software: you can redistribute it and/or modify it
+     * under the terms of the GNU General Public License as published by the
+     * Free Software Foundation, either version 3 of the License, or (at your
+     * option) any later version.
+     * 
+     * This program is distributed in the hope that it will be useful, but
+     * WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+     * Public License for more details.
+     * 
+     * You should have received a copy of the GNU General Public License along
+     * with this program. If not, see <http://www.gnu.org/licenses/>.
+     */
+    private static List<String> getActiveNetworkDnsResolvers(Context context) {
+        ArrayList<String> dnsAddresses = new ArrayList<String>();
+
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            Class<?> LinkPropertiesClass = Class.forName("android.net.LinkProperties");
+
+            Method getActiveLinkPropertiesMethod = ConnectivityManager.class.getMethod("getActiveLinkProperties", new Class[] {});
+
+            Object linkProperties = getActiveLinkPropertiesMethod.invoke(connectivityManager);
+
+            Method getDnsesMethod = LinkPropertiesClass.getMethod("getDnses", new Class[] {});
+
+            Collection<?> dnses = (Collection<?>) getDnsesMethod.invoke(linkProperties);
+
+            for (Object dns : dnses) {
+                dnsAddresses.add(InetAddressToString((InetAddress) dns));
+            }
+        } catch (ClassNotFoundException e) {
+        } catch (NoSuchMethodException e) {
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
+        } catch (NullPointerException e) {
+        }
+
+        return dnsAddresses;
     }
 }
