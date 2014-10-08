@@ -70,7 +70,7 @@ public class NetworkInfoFragment extends Fragment {
     public void populateInfo() {
         Context context = getActivity();
         mNetworkInfoTableLayout.removeAllViewsInLayout();
-
+ 
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
@@ -89,36 +89,32 @@ public class NetworkInfoFragment extends Fragment {
             addTableRow(context, mNetworkInfoTableLayout, reason, detailedState);
         }
 
-        boolean printedLabel = false;
+        String valueColumn = "";
 
         for (NetworkInterfaceInfo networkInterfaceInfo : getNetworkInterfaceInfos()) {
             mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
-
-            printedLabel = false;
+            valueColumn = "";
             for (String ipAddress : networkInterfaceInfo.ipAddresses) {
-                addTableRow(context, mNetworkInfoTableLayout, printedLabel ? "" : networkInterfaceInfo.name, ipAddress);
-                printedLabel = true;
+                valueColumn += ipAddress + "\n";
             }
-
             if (networkInterfaceInfo.MAC.length() > 0) {
-                addTableRow(context, mNetworkInfoTableLayout, "", networkInterfaceInfo.MAC);
+                valueColumn += networkInterfaceInfo.MAC + "\n";
             }
-
             if (networkInterfaceInfo.MTU != -1) {
-                addTableRow(context, mNetworkInfoTableLayout, "",
-                        String.format("%s: %d", context.getString(R.string.network_info_label_MTU), networkInterfaceInfo.MTU));
+                valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_MTU), networkInterfaceInfo.MTU);
             }
+            addTableRow(context, mNetworkInfoTableLayout, networkInterfaceInfo.name, valueColumn);
         }
 
-        printedLabel = false;
         List<String> DNSes = getActiveNetworkDnsResolvers(context);
         if (DNSes.size() > 0) {
             mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
-        }
-        for (String DNS : DNSes) {
-            addTableRow(context, mNetworkInfoTableLayout, printedLabel ? "" : context.getString(R.string.network_info_label_DNS),
-                    DNS);
-            printedLabel = true;
+            valueColumn = "";
+            for (String DNS : DNSes) {
+                valueColumn += DNS + "\n";
+            }
+            valueColumn = valueColumn.trim();
+            addTableRow(context, mNetworkInfoTableLayout, context.getString(R.string.network_info_label_DNS), valueColumn);
         }
     }
 
@@ -134,6 +130,7 @@ public class NetworkInfoFragment extends Fragment {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private TableRow makeTableRow(Context context, String label, String value) {
         TableRow tableRow = new TableRow(context);
         tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -148,6 +145,10 @@ public class NetworkInfoFragment extends Fragment {
         labelTextView.setTextAppearance(context, android.R.attr.textAppearanceSmall);
         labelTextView.setTextColor(getResources().getColor(R.color.dark_text_color));
         labelTextView.setPadding(0, 0, textPadding, 0);
+        labelTextView.setSingleLine(false);
+        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
+            labelTextView.setTextIsSelectable(true);
+        }
 
         TextView valueTextView = new TextView(context);
         valueTextView.setText(value);
@@ -156,6 +157,10 @@ public class NetworkInfoFragment extends Fragment {
         valueTextView.setTextAppearance(context, android.R.attr.textAppearanceSmall);
         valueTextView.setTextColor(getResources().getColor(R.color.dark_text_color));
         valueTextView.setPadding(textPadding, 0, 0, 0);
+        valueTextView.setSingleLine(false);
+        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
+            valueTextView.setTextIsSelectable(true);
+        }
 
         tableRow.addView(labelTextView);
         tableRow.addView(valueTextView);
