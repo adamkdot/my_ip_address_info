@@ -76,7 +76,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_ip_address_info, container, false);
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             ((TextView) rootView.findViewById(R.id.ipValue)).setTextIsSelectable(true);
             ((TextView) rootView.findViewById(R.id.countryValue)).setTextIsSelectable(true);
             ((TextView) rootView.findViewById(R.id.cityValue)).setTextIsSelectable(true);

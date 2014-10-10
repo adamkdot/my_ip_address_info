@@ -160,7 +160,7 @@ public class NetworkInfoFragment extends Fragment {
         labelTextView.setTextColor(getResources().getColor(R.color.dark_text_color));
         labelTextView.setPadding(0, 0, textPadding, 0);
         labelTextView.setSingleLine(false);
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             labelTextView.setTextIsSelectable(true);
         }
 
@@ -172,7 +172,7 @@ public class NetworkInfoFragment extends Fragment {
         valueTextView.setTextColor(getResources().getColor(R.color.dark_text_color));
         valueTextView.setPadding(textPadding, 0, 0, 0);
         valueTextView.setSingleLine(false);
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.HONEYCOMB) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             valueTextView.setTextIsSelectable(true);
         }
 
@@ -213,7 +213,7 @@ public class NetworkInfoFragment extends Fragment {
             for (NetworkInterface networkInterface : interfaces) {
                 NetworkInterfaceInfo networkInterfaceInfo = new NetworkInterfaceInfo();
                 networkInterfaceInfo.name = networkInterface.getDisplayName();
-                if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD) {
                     byte[] MAC = networkInterface.getHardwareAddress();
                     if (MAC != null) {
                         StringBuilder stringBuilder = new StringBuilder(18);

@@ -5,8 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    sothree:dragView="@+id/other_info_indicator"
-    sothree:fadeColor="@android:color/transparent"
     tools:context="com.adamkruger.myipaddressinfo.MainActivity" >
 
     <FrameLayout
