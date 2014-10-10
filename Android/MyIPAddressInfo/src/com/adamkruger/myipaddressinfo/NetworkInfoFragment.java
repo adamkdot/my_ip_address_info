@@ -48,6 +48,9 @@ import android.widget.TextView;
 
 public class NetworkInfoFragment extends Fragment {
 
+    private NetworkInfo mNetworkInfo;
+    private List<NetworkInterfaceInfo> mNetworkInterfaceInfos;
+    private List<String> mDNSes;
     private TableLayout mNetworkInfoTableLayout;
 
     public NetworkInfoFragment() {
@@ -57,41 +60,52 @@ public class NetworkInfoFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        refreshData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_network_info, container, false);
         mNetworkInfoTableLayout = (TableLayout) rootView.findViewById(R.id.networkInfoTableLayout);
-        populateInfo();
+        refreshView();
         return rootView;
     }
 
-    public void populateInfo() {
+    public void refresh() {
+        refreshData();
+        refreshView();
+    }
+
+    private void refreshData() {
+        Context context = getActivity();
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        mNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        mNetworkInterfaceInfos = getNetworkInterfaceInfos();
+        mDNSes = getActiveNetworkDnsResolvers(context);
+    }
+
+    private void refreshView() {
         Context context = getActivity();
         mNetworkInfoTableLayout.removeAllViewsInLayout();
- 
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (networkInfo != null) {
-            String state = networkInfo.getState().toString();
-            String detailedState = networkInfo.getDetailedState().toString();
-            String reason = networkInfo.getReason();
+        if (mNetworkInfo != null) {
+            String state = mNetworkInfo.getState().toString();
+            String detailedState = mNetworkInfo.getDetailedState().toString();
+            String reason = mNetworkInfo.getReason();
             if (detailedState.compareToIgnoreCase(state) == 0) {
                 detailedState = "";
             }
             if (reason == null || reason.compareToIgnoreCase(state) == 0 || reason.compareToIgnoreCase(detailedState) == 0) {
                 reason = "";
             }
-            addTableRow(context, mNetworkInfoTableLayout, networkInfo.getTypeName(), state);
-            addTableRow(context, mNetworkInfoTableLayout, networkInfo.getSubtypeName(), networkInfo.getExtraInfo());
+            addTableRow(context, mNetworkInfoTableLayout, mNetworkInfo.getTypeName(), state);
+            addTableRow(context, mNetworkInfoTableLayout, mNetworkInfo.getSubtypeName(), mNetworkInfo.getExtraInfo());
             addTableRow(context, mNetworkInfoTableLayout, reason, detailedState);
         }
 
         String valueColumn = "";
 
-        for (NetworkInterfaceInfo networkInterfaceInfo : getNetworkInterfaceInfos()) {
+        for (NetworkInterfaceInfo networkInterfaceInfo : mNetworkInterfaceInfos) {
             mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
             valueColumn = "";
             for (String ipAddress : networkInterfaceInfo.ipAddresses) {
@@ -101,16 +115,16 @@ public class NetworkInfoFragment extends Fragment {
                 valueColumn += networkInterfaceInfo.MAC + "\n";
             }
             if (networkInterfaceInfo.MTU != -1) {
-                valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_MTU), networkInterfaceInfo.MTU);
+                valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_MTU),
+                        networkInterfaceInfo.MTU);
             }
             addTableRow(context, mNetworkInfoTableLayout, networkInterfaceInfo.name, valueColumn);
         }
 
-        List<String> DNSes = getActiveNetworkDnsResolvers(context);
-        if (DNSes.size() > 0) {
+        if (mDNSes.size() > 0) {
             mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
             valueColumn = "";
-            for (String DNS : DNSes) {
+            for (String DNS : mDNSes) {
                 valueColumn += DNS + "\n";
             }
             valueColumn = valueColumn.trim();

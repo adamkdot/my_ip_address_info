@@ -169,7 +169,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void refreshNetworkInfo() {
         if (mNetworkInfoFragment != null && mNetworkInfoFragment.isVisible()) {
-            mNetworkInfoFragment.populateInfo();
+            mNetworkInfoFragment.refresh();
         }
     }
 }
