@@ -19,6 +19,7 @@
 
 package com.adamkruger.myipaddressinfo;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import android.support.v7.app.ActionBarActivity;
@@ -96,6 +97,11 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);
+        if (slidingPanelLayout != null) {
+            slidingPanelLayout.setAnchorPoint(0.5f);
+        }
+        
         FragmentManager fragmentManager = getSupportFragmentManager();
         mIPAddressInfoFragment = (IPAddressInfoFragment) fragmentManager.findFragmentByTag(TAG_IP_ADDRESS_INFO_FRAGMENT);
         mAdditionalInfoPager = (ViewPager) findViewById(R.id.other_info_container);
