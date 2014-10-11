@@ -27,16 +27,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
-import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 
 public class MainActivity extends ActionBarActivity {
@@ -96,27 +93,11 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);
-        if (slidingPanelLayout != null) {
-            Display display = getWindowManager().getDefaultDisplay();
-            int height;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB_MR2) {
-                Point size = new Point();
-                display.getSize(size);
-                height = size.y;
-            } else {
-                height = display.getHeight();
-            }
-            slidingPanelLayout.setPanelHeight((int) (0.4f * height));
-        }
-        
         FragmentManager fragmentManager = getSupportFragmentManager();
         mIPAddressInfoFragment = (IPAddressInfoFragment) fragmentManager.findFragmentByTag(TAG_IP_ADDRESS_INFO_FRAGMENT);
         mAdditionalInfoPager = (ViewPager) findViewById(R.id.other_info_container);
@@ -152,6 +133,26 @@ public class MainActivity extends ActionBarActivity {
         int additionalInfoCurrentPage = PreferenceManager.getDefaultSharedPreferences(this).getInt(
                 getResources().getString(R.string.PREFERENCE_ADDITIONAL_INFO_PAGE), 0);
         mAdditionalInfoPager.setCurrentItem(additionalInfoCurrentPage);
+        
+        findViewById(R.id.ip_address_info_container).getViewTreeObserver().addOnGlobalLayoutListener(
+                new OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Compute the best panel height so that as much as
+                        // possible of both the IPAddressInfoFragment and the
+                        // SlidingUpPanelLayout is showing, without wasting
+                        // empty space
+                        SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);
+                        if (slidingPanelLayout != null) {
+                            int ipAddressFragmentHeight = mIPAddressInfoFragment.getOptimalHeight();
+
+                            int optimalSlidingPanelHeight = slidingPanelLayout.getBottom() - ipAddressFragmentHeight;
+                            if (optimalSlidingPanelHeight > slidingPanelLayout.getPanelHeight()) {
+                                slidingPanelLayout.setPanelHeight(optimalSlidingPanelHeight);
+                            }
+                        }
+                    }
+                });
     }
 
     @Override

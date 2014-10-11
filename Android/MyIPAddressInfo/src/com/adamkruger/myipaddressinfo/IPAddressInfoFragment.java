@@ -87,6 +87,17 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
         mDefaultLastUpdateTimeColor = ((TextView) rootView.findViewById(R.id.lastUpdateTime)).getTextColors().getDefaultColor();
         return rootView;
     }
+    
+    public int getOptimalHeight() {
+        int height = 0;
+        View view = getView();
+        if (view != null) {
+            height += view.findViewById(R.id.ipAddressFragmentTableLayout).getHeight();
+            height += view.findViewById(R.id.lastUpdateStatus).getHeight();
+            height += view.findViewById(R.id.lastUpdateTime).getHeight();
+        }
+        return height;
+    }
 
     @Override
     public void onClick(View v) {
