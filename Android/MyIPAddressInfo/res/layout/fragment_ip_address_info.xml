@@ -14,134 +14,136 @@
         android:layout_alignParentTop="true"
         android:fadeScrollbars="false" >
 
-	    <TableLayout
-	        android:id="@+id/tableLayout1"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content" >
-	
-	        <TableRow
-	            android:id="@+id/tableRowIpAdress"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:background="@color/background_color_dark" >
-	
-	            <TextView
-	                android:id="@+id/ipLabel"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:text="@string/label_ip"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/heading_color_1" />
-	
-	            <TextView
-	                android:id="@+id/ipValue"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/light_text_color" />
-	        </TableRow>
-	
-	        <TableRow
-	            android:id="@+id/tableRowCountry"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content" >
-	
-	            <TextView
-	                android:id="@+id/countryLabel"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:text="@string/label_country"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/heading_color_2" />
-	
-	            <TextView
-	                android:id="@+id/countryValue"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/light_text_color" />
-	        </TableRow>
-	
-	        <TableRow
-	            android:id="@+id/tableRowCity"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@color/background_color_dark" >
-	
-	            <TextView
-	                android:id="@+id/cityLabel"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:text="@string/label_city"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/heading_color_3" />
-	
-	            <TextView
-	                android:id="@+id/cityValue"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/light_text_color" />
-	        </TableRow>
-	
-	        <TableRow
-	            android:id="@+id/tableRowRegion"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content" >
-	
-	            <TextView
-	                android:id="@+id/regionLabel"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:text="@string/label_region"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/heading_color_4" />
-	
-	            <TextView
-	                android:id="@+id/regionValue"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/light_text_color" />
-	        </TableRow>
-	        
-	        <TableRow
-	            android:id="@+id/tableRowCoordinates"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@color/background_color_dark" >
-	
-	            <TextView
-	                android:id="@+id/coordinatesLabel"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:text="@string/label_coordinates"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/heading_color_5" />
-	
-	            <TextView
-	                android:id="@+id/coordinatesValue"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:padding="@dimen/heading_padding"
-	                android:textAppearance="?android:attr/textAppearanceLarge"
-	                android:textColor="@color/light_text_color" />
+        <TableLayout
+            android:id="@+id/ipAddressFragmentTableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-	        </TableRow>
-	        
-	    </TableLayout>
-    
+            <TableRow
+                android:id="@+id/tableRowIpAdress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/background_color_dark"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/ipLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:text="@string/label_ip"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/heading_color_1" />
+
+                <TextView
+                    android:id="@+id/ipValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/light_text_color" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/countryLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:text="@string/label_country"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/heading_color_2" />
+
+                <TextView
+                    android:id="@+id/countryValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/light_text_color" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/background_color_dark"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/cityLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:text="@string/label_city"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/heading_color_3" />
+
+                <TextView
+                    android:id="@+id/cityValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/light_text_color" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowRegion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/regionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:text="@string/label_region"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/heading_color_4" />
+
+                <TextView
+                    android:id="@+id/regionValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/light_text_color" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowCoordinates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/background_color_dark"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/coordinatesLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:text="@string/label_coordinates"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/heading_color_5" />
+
+                <TextView
+                    android:id="@+id/coordinatesValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/heading_padding"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/light_text_color" />
+            </TableRow>
+        </TableLayout>
     </ScrollView>
-    
+
     <TextView
         android:id="@+id/lastUpdateStatus"
         android:layout_width="wrap_content"
