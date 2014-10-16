@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -146,19 +145,19 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
                 if (mLastUpdateTimedOut) {
                     lastUpdateStatus.setText(String.format(getResources().getString(R.string.last_update_status_timeout),
                             mLastUpdateElapsedTimeMs / 1000));
-                    lastUpdateStatus.setTextColor(Color.RED);
+                    lastUpdateStatus.setTextColor(getResources().getColor(R.color.error_color));
                 } else if (mLastUpdateSucceeded) {
                     lastUpdateStatus.setText(String.format(getResources().getString(R.string.last_update_status_success),
                             mLastUpdateElapsedTimeMs));
                     if (mLastUpdateElapsedTimeMs < 2000) {
-                        lastUpdateStatus.setTextColor(Color.GREEN);
+                        lastUpdateStatus.setTextColor(getResources().getColor(R.color.success_color));
                     } else {
-                        lastUpdateStatus.setTextColor(Color.YELLOW);
+                        lastUpdateStatus.setTextColor(getResources().getColor(R.color.warning_color));
                     }
                 } else {
                     lastUpdateStatus.setText(String.format(getResources().getString(R.string.last_update_status_fail),
                             mLastUpdateElapsedTimeMs));
-                    lastUpdateStatus.setTextColor(Color.RED);
+                    lastUpdateStatus.setTextColor(getResources().getColor(R.color.error_color));
                 }
 
                 TextView lastUpdateTime = (TextView) view.findViewById(R.id.lastUpdateTime);
@@ -167,7 +166,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
                 if (currentTime.equals(mLastUpdateTime)) {
                     lastUpdateTime.setTextColor(mDefaultLastUpdateTimeColor);
                 } else {
-                    lastUpdateTime.setTextColor(Color.YELLOW);
+                    lastUpdateTime.setTextColor(getResources().getColor(R.color.warning_color));
                 }
 
             }

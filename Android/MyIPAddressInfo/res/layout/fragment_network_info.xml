@@ -15,10 +15,10 @@
             android:id="@+id/networkInfoTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/heading_padding"
+            android:padding="@dimen/title_padding"
             android:text="@string/network_info_title"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/heading_color_1" />
+            android:textColor="@color/title_color" />
     </LinearLayout>
 
     <ScrollView

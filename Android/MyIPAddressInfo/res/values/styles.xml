@@ -17,19 +17,34 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="vpiCirclePageIndicatorStyle">@style/CustomCirclePageIndicator</item>
     </style>
+    
     <color name="background_color">#848482</color>
     <color name="background_color_dark">#3D3C3A</color>
     <color name="background_color_light">#A4A4A2</color>
-    <color name="heading_color_1">#FFD4A3</color>
-    <color name="heading_color_2">#0C435A</color>
-    <color name="heading_color_3">#D36247</color>
-    <color name="heading_color_4">#09672F</color>
-    <color name="heading_color_5">#F5B873</color>
     <color name="light_text_color">#E5E4E2</color>
     <color name="dark_text_color">#1D1C1A</color>
     <color name="dark_text_hint_color">#5D5C5A</color>
-    <dimen name="heading_padding">10dp</dimen>
-    <dimen name="label_value_padding">5dp</dimen>
+    
+    <!-- http://paletton.com/#uid=70D1T0kleqtbzEKgVuIpcmGtdhZ -->
+    <color name="custom_light_orange">#F5B973</color>
+    <!-- color name="custom_dark_orange">#D39247</color -->
+    <!-- color name="custom_light_green">#A8DE69</color -->
+    <!-- color name="custom_dark_green">#84BF40</color -->
+    <!-- color name="custom_light_red">#D4648F</color -->
+    <color name="custom_dark_red">#9C2151</color>
+    <!-- color name="custom_light_blue">#4D819B</color -->
+    <color name="custom_dark_blue">#1D5672</color>
+    
+    <color name="label_color">@color/custom_light_orange</color>
+    <color name="title_color">@color/custom_dark_blue</color>
+    <color name="success_color">@color/dark_text_color</color>
+    <color name="warning_color">@color/custom_light_orange</color>
+    <color name="error_color">@color/custom_dark_red</color>
+
+    <style name="IPAddressInfoStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:padding">10dp</item>
+    </style>
     
     <style name="CustomCirclePageIndicator">
         <item name="fillColor">@color/light_text_color</item>

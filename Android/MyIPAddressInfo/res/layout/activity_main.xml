@@ -23,7 +23,7 @@
             android:id="@+id/other_info_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/heading_padding" />
+            android:paddingTop="@dimen/title_padding" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/other_info_container"

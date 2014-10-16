@@ -1,0 +1,8 @@
+<resources>
+
+    <style name="IPAddressInfoStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    
+</resources>
