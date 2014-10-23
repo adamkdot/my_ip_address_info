@@ -21,15 +21,16 @@
     <color name="background_color">#848482</color>
     <color name="background_color_dark">#3D3C3A</color>
     <color name="background_color_light">#A4A4A2</color>
+    <color name="background_color_white">#C4C4C2</color>
     <color name="light_text_color">#E5E4E2</color>
     <color name="dark_text_color">#1D1C1A</color>
     <color name="dark_text_hint_color">#5D5C5A</color>
     
     <!-- http://paletton.com/#uid=70D1T0kleqtbzEKgVuIpcmGtdhZ -->
     <color name="custom_light_orange">#F5B973</color>
-    <!-- color name="custom_dark_orange">#D39247</color -->
+    <color name="custom_dark_orange">#8F530C</color>
     <!-- color name="custom_light_green">#A8DE69</color -->
-    <!-- color name="custom_dark_green">#84BF40</color -->
+    <!-- color name="custom_dark_green">#4B820B</color -->
     <!-- color name="custom_light_red">#D4648F</color -->
     <color name="custom_dark_red">#9C2151</color>
     <!-- color name="custom_light_blue">#4D819B</color -->
@@ -37,6 +38,7 @@
     
     <color name="label_color">@color/custom_light_orange</color>
     <color name="title_color">@color/custom_dark_blue</color>
+    <color name="subtitle_color">@color/custom_dark_orange</color>
     <color name="success_color">@color/dark_text_color</color>
     <color name="warning_color">@color/custom_light_orange</color>
     <color name="error_color">@color/custom_dark_red</color>

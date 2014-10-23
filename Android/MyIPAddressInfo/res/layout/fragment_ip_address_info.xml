@@ -32,6 +32,7 @@
                     style="@style/IPAddressInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="@string/label_ip"
                     android:textColor="@color/label_color" />
 
@@ -54,6 +55,7 @@
                     style="@style/IPAddressInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="@string/label_city"
                     android:textColor="@color/label_color" />
 
@@ -76,6 +78,7 @@
                     style="@style/IPAddressInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="@string/label_region"
                     android:textColor="@color/label_color" />
 
@@ -98,6 +101,7 @@
                     style="@style/IPAddressInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="@string/label_country"
                     android:textColor="@color/label_color" />
 
@@ -120,6 +124,7 @@
                     style="@style/IPAddressInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="@string/label_coordinates"
                     android:textColor="@color/label_color" />
 

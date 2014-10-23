@@ -21,9 +21,11 @@ package com.adamkruger.myipaddressinfo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,10 +37,14 @@ import org.apache.http.conn.util.InetAddressUtils;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +57,9 @@ public class NetworkInfoFragment extends Fragment {
     private NetworkInfo mNetworkInfo;
     private List<NetworkInterfaceInfo> mNetworkInterfaceInfos;
     private List<String> mDNSes;
+    private boolean mWifiEnabled;
+    private WifiInfo mWifiInfo;
+    private DhcpInfo mDhcpInfo;
     private TableLayout mNetworkInfoTableLayout;
 
     public NetworkInfoFragment() {
@@ -82,6 +91,10 @@ public class NetworkInfoFragment extends Fragment {
         mNetworkInfo = connectivityManager.getActiveNetworkInfo();
         mNetworkInterfaceInfos = getNetworkInterfaceInfos();
         mDNSes = getActiveNetworkDnsResolvers(context);
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        mWifiEnabled = wifiManager.isWifiEnabled();
+        mWifiInfo = wifiManager.getConnectionInfo();
+        mDhcpInfo = wifiManager.getDhcpInfo();
     }
 
     private void refreshView() {
@@ -98,16 +111,61 @@ public class NetworkInfoFragment extends Fragment {
             if (reason == null || reason.compareToIgnoreCase(state) == 0 || reason.compareToIgnoreCase(detailedState) == 0) {
                 reason = "";
             }
-            addTableRow(context, mNetworkInfoTableLayout, mNetworkInfo.getTypeName(), state);
-            addTableRow(context, mNetworkInfoTableLayout, mNetworkInfo.getSubtypeName(), mNetworkInfo.getExtraInfo());
-            addTableRow(context, mNetworkInfoTableLayout, reason, detailedState);
+            addTableRowTitle(context.getString(R.string.network_info_subtitle_active_network));
+            addTableRow(new Row().addLine(mNetworkInfo.getTypeName(), state)
+                    .addLine(mNetworkInfo.getSubtypeName(), mNetworkInfo.getExtraInfo()).addLine(reason, detailedState));
         }
 
-        String valueColumn = "";
+        if (mWifiEnabled) {
+            if (mWifiInfo != null) {
+                String wifiSSID = mWifiInfo.getSSID();
+                if (wifiSSID.length() > 0) {
+                    addTableRowSpacer();
+                    addTableRowTitle(context.getString(R.string.network_info_subtitle_wifi_info));
+                    addTableRow(new Row().addLine(
+                            wifiSSID,
+                            mWifiInfo.getLinkSpeed() + WifiInfo.LINK_SPEED_UNITS + " ("
+                                    + WifiManager.calculateSignalLevel(mWifiInfo.getRssi(), 100) + "%)").addLine(
+                            mWifiInfo.getHiddenSSID() ? context.getString(R.string.network_info_hidden_network) : "", ""));
+                }
+            }
+            if (mDhcpInfo != null) {
+                String dhcpIPAddress = intToHostAddress(mDhcpInfo.ipAddress);
+                if (dhcpIPAddress.length() > 0) {
+                    addTableRowSpacer();
+                    addTableRowTitle(context.getString(R.string.network_info_subtitle_dhcp_info));
+                    addTableRow(new Row()
+                            .addLineIfValue(context.getString(R.string.network_info_label_ip_address), dhcpIPAddress)
+                            .addLineIfValue(context.getString(R.string.network_info_label_gateway),
+                                    intToHostAddress(mDhcpInfo.gateway))
+                            // TODO: netmask conversion doesn't work
+                            .addLineIfValue(context.getString(R.string.network_info_label_netmask),
+                                    intToHostAddress(mDhcpInfo.netmask))
+                            .addLineIfValue(context.getString(R.string.network_info_label_dns), intToHostAddress(mDhcpInfo.dns1))
+                            .addLineIfValue(context.getString(R.string.network_info_label_dns), intToHostAddress(mDhcpInfo.dns2))
+                            .addLineIfValue(context.getString(R.string.network_info_label_dhcp_server),
+                                    intToHostAddress(mDhcpInfo.serverAddress))
+                            .addLineIfValue(context.getString(R.string.network_info_label_lease_duration),
+                                    Integer.toString(mDhcpInfo.leaseDuration)));
+                }
+            }
+        } else if (mDNSes.size() > 0) {
+            addTableRowSpacer();
+            addTableRowTitle(context.getString(R.string.network_info_subtitle_active_dns));
+            Row row = new Row();
+            for (String DNS : mDNSes) {
+                row.addLine(context.getString(R.string.network_info_label_dns), DNS);
+            }
+            addTableRow(row);
+        }
+
+        if (mNetworkInterfaceInfos.size() > 0) {
+            addTableRowSpacer();
+            addTableRowTitle(context.getString(R.string.network_info_subtitle_interfaces));
+        }
 
         for (NetworkInterfaceInfo networkInterfaceInfo : mNetworkInterfaceInfos) {
-            mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
-            valueColumn = "";
+            String valueColumn = "";
             for (String ipAddress : networkInterfaceInfo.ipAddresses) {
                 valueColumn += ipAddress + "\n";
             }
@@ -115,77 +173,109 @@ public class NetworkInfoFragment extends Fragment {
                 valueColumn += networkInterfaceInfo.MAC + "\n";
             }
             if (networkInterfaceInfo.MTU != -1) {
-                valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_MTU),
+                valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_mtu),
                         networkInterfaceInfo.MTU);
             }
-            addTableRow(context, mNetworkInfoTableLayout, networkInterfaceInfo.name, valueColumn);
+            addTableRow(new Row().addLine(networkInterfaceInfo.name, valueColumn));
+        }
+        
+        addTableRowSpacer();
+    }
+
+    private static class Row {
+        public String mLabel;
+        public String mValue;
+
+        public Row() {
+            mLabel = "";
+            mValue = "";
         }
 
-        if (mDNSes.size() > 0) {
-            mNetworkInfoTableLayout.addView(makeTableRowSpacer(context));
-            valueColumn = "";
-            for (String DNS : mDNSes) {
-                valueColumn += DNS + "\n";
+        public Row addLine(String label, String value) {
+            if (label == null) {
+                label = "";
             }
-            valueColumn = valueColumn.trim();
-            addTableRow(context, mNetworkInfoTableLayout, context.getString(R.string.network_info_label_DNS), valueColumn);
+            if (value == null) {
+                value = "";
+            }
+            if (label.length() > 0 || value.length() > 0) {
+                if (mLabel.length() > 0 || mValue.length() > 0) {
+                    mLabel += "\n";
+                    mValue += "\n";
+
+                }
+                mLabel += label;
+                mValue += value;
+            }
+            return this;
+        }
+
+        public Row addLineIfValue(String label, String value) {
+            if (value != null && value.length() > 0) {
+                addLine(label, value);
+            }
+            return this;
         }
     }
 
-    private void addTableRow(Context context, TableLayout tableLayout, String label, String value) {
-        if (label == null) {
-            label = "";
-        }
-        if (value == null) {
-            value = "";
-        }
-        if (label.length() > 0 || value.length() > 0) {
-            tableLayout.addView(makeTableRow(context, label, value));
+    private void addTableRowSpacer() {
+        Context context = getActivity();
+        TableRow tableRow = new TableRow(context);
+        View spacerView = new View(context);
+        int spacerHeight = (int) (getResources().getDisplayMetrics().density
+                * getResources().getDimension(R.dimen.network_info_spacer_height) + 0.5f);
+        spacerView.setLayoutParams(new TableRow.LayoutParams(1, spacerHeight));
+        tableRow.addView(spacerView);
+        mNetworkInfoTableLayout.addView(tableRow);
+    }
+
+    private void addTableRowTitle(String title) {
+        int horizontalPadding = (int) (getResources().getDisplayMetrics().density
+                * getResources().getDimension(R.dimen.subtitle_padding) + 0.5f);
+        TextView titleView = makeTextView(title, getResources().getColor(R.color.subtitle_color), horizontalPadding);
+        mNetworkInfoTableLayout.addView(makeTableRow(titleView, null));
+    }
+
+    private void addTableRow(Row row) {
+        if (row.mLabel.length() > 0 || row.mValue.length() > 0) {
+            int horizontalPadding = (int) (getResources().getDisplayMetrics().density
+                    * getResources().getDimension(R.dimen.label_value_padding) + 0.5f);
+            TextView labelView = makeTextView(row.mLabel, getResources().getColor(R.color.dark_text_color), horizontalPadding);
+            labelView.setGravity(Gravity.RIGHT);
+            TextView valueView = makeTextView(row.mValue, getResources().getColor(R.color.dark_text_color), horizontalPadding);
+            TableRow tableRow = makeTableRow(labelView, valueView);
+            tableRow.setBackgroundColor(getResources().getColor(R.color.background_color_white));
+            tableRow.setGravity(Gravity.CENTER_HORIZONTAL);
+            mNetworkInfoTableLayout.addView(tableRow);
         }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private TableRow makeTableRow(Context context, String label, String value) {
-        TableRow tableRow = new TableRow(context);
-        tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-
-        int textPadding = (int) (getResources().getDisplayMetrics().density
-                * getResources().getDimension(R.dimen.label_value_padding) + 0.5f);
-
-        TextView labelTextView = new TextView(context);
-        labelTextView.setText(label);
-        labelTextView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        labelTextView.setTextAppearance(context, android.R.attr.textAppearanceSmall);
-        labelTextView.setTextColor(getResources().getColor(R.color.dark_text_color));
-        labelTextView.setPadding(0, 0, textPadding, 0);
-        labelTextView.setSingleLine(false);
+    private TextView makeTextView(String value, int color, int horizontalPadding) {
+        Context context = getActivity();
+        TextView textView = new TextView(context);
+        textView.setText(value);
+        textView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+        textView.setTextAppearance(context, android.R.attr.textAppearanceSmall);
+        textView.setTextColor(color);
+        textView.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+        textView.setSingleLine(false);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            labelTextView.setTextIsSelectable(true);
+            textView.setTextIsSelectable(true);
         }
-
-        TextView valueTextView = new TextView(context);
-        valueTextView.setText(value);
-        valueTextView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        valueTextView.setTextAppearance(context, android.R.attr.textAppearanceSmall);
-        valueTextView.setTextColor(getResources().getColor(R.color.dark_text_color));
-        valueTextView.setPadding(textPadding, 0, 0, 0);
-        valueTextView.setSingleLine(false);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            valueTextView.setTextIsSelectable(true);
-        }
-
-        tableRow.addView(labelTextView);
-        tableRow.addView(valueTextView);
-        return tableRow;
+        return textView;
     }
 
-    private TableRow makeTableRowSpacer(Context context) {
-        TableRow tableRow = new TableRow(context);
-        View spacerView = new View(context);
-        spacerView.setLayoutParams(new TableRow.LayoutParams(1, 16));
-        tableRow.addView(spacerView);
+    private TableRow makeTableRow(TextView label, TextView value) {
+        TableRow tableRow = new TableRow(getActivity());
+        tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+        int verticalPadding = (int) (getResources().getDisplayMetrics().density
+                * getResources().getDimension(R.dimen.network_info_vertical_padding) + 0.5f);
+        tableRow.setPadding(0, verticalPadding, 0, verticalPadding);
+        tableRow.addView(label);
+        if (value != null) {
+            tableRow.addView(value);
+        }
         return tableRow;
     }
 
@@ -252,6 +342,19 @@ public class NetworkInfoFragment extends Fragment {
             int suffixPosition = addressString.indexOf('%');
             return suffixPosition < 0 ? addressString : addressString.substring(0, suffixPosition);
         }
+    }
+
+    // Taken from
+    // http://stackoverflow.com/questions/17055946/android-formatter-formatipaddress-deprecation-with-api-12
+    private static String intToHostAddress(int addressAsInt) {
+        String hostAddress = "";
+        byte[] ipAddress = BigInteger.valueOf(Integer.reverseBytes(addressAsInt)).toByteArray();
+        try {
+            InetAddress inetAddress = InetAddress.getByAddress(ipAddress);
+            hostAddress = InetAddressToString(inetAddress);
+        } catch (UnknownHostException e) {
+        }
+        return hostAddress;
     }
 
     // Copied and adapted from
