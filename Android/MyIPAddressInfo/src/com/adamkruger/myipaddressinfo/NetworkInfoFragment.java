@@ -125,7 +125,7 @@ public class NetworkInfoFragment extends Fragment {
                     addTableRow(new Row().addLine(
                             wifiSSID,
                             mWifiInfo.getLinkSpeed() + WifiInfo.LINK_SPEED_UNITS + " ("
-                                    + WifiManager.calculateSignalLevel(mWifiInfo.getRssi(), 100) + "%)").addLine(
+                                    + calculateSignalLevel(mWifiInfo.getRssi(), 100) + "%)").addLine(
                             mWifiInfo.getHiddenSSID() ? context.getString(R.string.network_info_hidden_network) : "", ""));
                 }
             }
@@ -233,7 +233,11 @@ public class NetworkInfoFragment extends Fragment {
         int horizontalPadding = (int) (getResources().getDisplayMetrics().density
                 * getResources().getDimension(R.dimen.subtitle_padding) + 0.5f);
         TextView titleView = makeTextView(title, getResources().getColor(R.color.subtitle_color), horizontalPadding);
-        mNetworkInfoTableLayout.addView(makeTableRow(titleView, null));
+        TableRow tableRow = makeTableRow(titleView, null);
+        int verticalPadding = (int) (getResources().getDisplayMetrics().density
+                * getResources().getDimension(R.dimen.network_info_vertical_padding) + 0.5f);
+        tableRow.setPadding(0, 0, 0, verticalPadding);
+        mNetworkInfoTableLayout.addView(tableRow);
     }
 
     private void addTableRow(Row row) {
@@ -244,6 +248,9 @@ public class NetworkInfoFragment extends Fragment {
             labelView.setGravity(Gravity.RIGHT);
             TextView valueView = makeTextView(row.mValue, getResources().getColor(R.color.dark_text_color), horizontalPadding);
             TableRow tableRow = makeTableRow(labelView, valueView);
+            int verticalPadding = (int) (getResources().getDisplayMetrics().density
+                    * getResources().getDimension(R.dimen.network_info_vertical_padding) + 0.5f);
+            tableRow.setPadding(0, verticalPadding, 0, verticalPadding);
             tableRow.setBackgroundColor(getResources().getColor(R.color.background_color_white));
             tableRow.setGravity(Gravity.CENTER_HORIZONTAL);
             mNetworkInfoTableLayout.addView(tableRow);
@@ -269,9 +276,6 @@ public class NetworkInfoFragment extends Fragment {
     private TableRow makeTableRow(TextView label, TextView value) {
         TableRow tableRow = new TableRow(getActivity());
         tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-        int verticalPadding = (int) (getResources().getDisplayMetrics().density
-                * getResources().getDimension(R.dimen.network_info_vertical_padding) + 0.5f);
-        tableRow.setPadding(0, verticalPadding, 0, verticalPadding);
         tableRow.addView(label);
         if (value != null) {
             tableRow.addView(value);
@@ -404,5 +408,39 @@ public class NetworkInfoFragment extends Fragment {
         }
 
         return dnsAddresses;
+    }
+    
+    // Copied from Android sources. On Android 2.3 there is a divide-by-zero bug.
+    /*
+     * Copyright (C) 2008 The Android Open Source Project
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    /** Anything worse than or equal to this will show 0 bars. */
+    private static final int MIN_RSSI = -100;
+
+    /** Anything better than or equal to this will show the max bars. */
+    private static final int MAX_RSSI = -55;
+    
+    private static int calculateSignalLevel(int rssi, int numLevels) {
+        if (rssi <= MIN_RSSI) {
+            return 0;
+        } else if (rssi >= MAX_RSSI) {
+            return numLevels - 1;
+        } else {
+            float inputRange = (MAX_RSSI - MIN_RSSI);
+            float outputRange = (numLevels - 1);
+            return (int)((float)(rssi - MIN_RSSI) * outputRange / inputRange);
+        }
     }
 }
