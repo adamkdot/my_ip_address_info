@@ -9,17 +9,14 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/lastUpdateStatus"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:background="@color/background_color_dark"
         android:fadeScrollbars="false" >
 
         <TableLayout
             android:id="@+id/ipAddressFragmentTableLayout"
+            style="@style/IPAddressTableLayoutStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" >
+            android:layout_height="wrap_content" >
 
             <TableRow
                 android:id="@+id/tableRowIpAdress"

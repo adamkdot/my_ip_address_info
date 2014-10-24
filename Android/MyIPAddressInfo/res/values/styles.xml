@@ -48,6 +48,9 @@
         <item name="android:padding">10dp</item>
     </style>
     
+    <style name="IPAddressTableLayoutStyle">
+    </style>
+    
     <style name="CustomCirclePageIndicator">
         <item name="fillColor">@color/light_text_color</item>
         <item name="strokeColor">@color/background_color_dark</item>

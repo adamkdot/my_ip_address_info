@@ -5,4 +5,8 @@
         <item name="android:padding">10dp</item>
     </style>
     
+    <style name="IPAddressTableLayoutStyle">
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+    
 </resources>
