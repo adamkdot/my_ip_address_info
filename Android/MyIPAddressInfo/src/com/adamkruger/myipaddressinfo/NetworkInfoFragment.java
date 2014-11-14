@@ -129,6 +129,7 @@ public class NetworkInfoFragment extends Fragment {
                             mWifiInfo.getHiddenSSID() ? context.getString(R.string.network_info_hidden_network) : "", ""));
                 }
             }
+        
             if (mDhcpInfo != null) {
                 String dhcpIPAddress = intToHostAddress(mDhcpInfo.ipAddress);
                 if (dhcpIPAddress.length() > 0) {
@@ -149,7 +150,9 @@ public class NetworkInfoFragment extends Fragment {
                                     Integer.toString(mDhcpInfo.leaseDuration)));
                 }
             }
-        } else if (mDNSes.size() > 0) {
+        }
+        
+        if (mDNSes.size() > 0) {
             addTableRowSpacer();
             addTableRowTitle(context.getString(R.string.network_info_subtitle_active_dns));
             Row row = new Row();
@@ -162,21 +165,21 @@ public class NetworkInfoFragment extends Fragment {
         if (mNetworkInterfaceInfos.size() > 0) {
             addTableRowSpacer();
             addTableRowTitle(context.getString(R.string.network_info_subtitle_interfaces));
-        }
 
-        for (NetworkInterfaceInfo networkInterfaceInfo : mNetworkInterfaceInfos) {
-            String valueColumn = "";
-            for (String ipAddress : networkInterfaceInfo.ipAddresses) {
-                valueColumn += ipAddress + "\n";
+            for (NetworkInterfaceInfo networkInterfaceInfo : mNetworkInterfaceInfos) {
+                String valueColumn = "";
+                for (String ipAddress : networkInterfaceInfo.ipAddresses) {
+                    valueColumn += ipAddress + "\n";
+                }
+                if (networkInterfaceInfo.MAC.length() > 0) {
+                    valueColumn += networkInterfaceInfo.MAC + "\n";
+                }
+                if (networkInterfaceInfo.MTU != -1) {
+                    valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_mtu),
+                            networkInterfaceInfo.MTU);
+                }
+                addTableRow(new Row().addLine(networkInterfaceInfo.name, valueColumn));
             }
-            if (networkInterfaceInfo.MAC.length() > 0) {
-                valueColumn += networkInterfaceInfo.MAC + "\n";
-            }
-            if (networkInterfaceInfo.MTU != -1) {
-                valueColumn += String.format("%s: %d", context.getString(R.string.network_info_label_mtu),
-                        networkInterfaceInfo.MTU);
-            }
-            addTableRow(new Row().addLine(networkInterfaceInfo.name, valueColumn));
         }
         
         addTableRowSpacer();
