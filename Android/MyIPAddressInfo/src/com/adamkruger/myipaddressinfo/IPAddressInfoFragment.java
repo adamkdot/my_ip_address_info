@@ -23,6 +23,7 @@ import java.lang.ref.WeakReference;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -45,12 +46,10 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-public class IPAddressInfoFragment extends Fragment implements OnClickListener, AsyncHTTPRequest.RequestTaskCaller {
+public class IPAddressInfoFragment extends Fragment implements OnClickListener {
 
-    final static String IP_ADDRESS_INFO_REQUEST_URL = "http://freegeoip.net/json/";
-
-    private WeakReference<AsyncHTTPRequest> mRequestTaskWeakRef;
     private String mIPAddress;
+    private String mISP;
     private String mCountry;
     private String mCity;
     private String mRegion;
@@ -60,14 +59,21 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
     private long mLastUpdateElapsedTimeMs;
     private String mLastUpdateTime;
     private int mDefaultLastUpdateTimeColor;
-
-    public IPAddressInfoFragment() {
-    }
+    private ArrayList<GeoIpServiceRequestCaller> mGeoIpProviders;
+    private int mMaxFailovers;
+    private int mFailovers;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        mGeoIpProviders = new ArrayList<GeoIpServiceRequestCaller>();
+        mGeoIpProviders.add(new TelizeDotComRequestCaller());
+        mGeoIpProviders.add(new FreegeoipDotNetRequestCaller());
+        mMaxFailovers = mGeoIpProviders.size() - 1;
+        mFailovers = 0;
+        
         makeIPAddressInfoRequest();
     }
 
@@ -77,6 +83,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
         View rootView = inflater.inflate(R.layout.fragment_ip_address_info, container, false);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             ((TextView) rootView.findViewById(R.id.ipValue)).setTextIsSelectable(true);
+            ((TextView) rootView.findViewById(R.id.ispValue)).setTextIsSelectable(true);
             ((TextView) rootView.findViewById(R.id.countryValue)).setTextIsSelectable(true);
             ((TextView) rootView.findViewById(R.id.cityValue)).setTextIsSelectable(true);
             ((TextView) rootView.findViewById(R.id.regionValue)).setTextIsSelectable(true);
@@ -134,6 +141,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
         View view = getView();
         if (view != null) {
             ((TextView) view.findViewById(R.id.ipValue)).setText(mIPAddress);
+            ((TextView) view.findViewById(R.id.ispValue)).setText(mISP);
             ((TextView) view.findViewById(R.id.countryValue)).setText(mCountry);
             ((TextView) view.findViewById(R.id.cityValue)).setText(mCity);
             ((TextView) view.findViewById(R.id.regionValue)).setText(mRegion);
@@ -168,13 +176,13 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
                 } else {
                     lastUpdateTime.setTextColor(getResources().getColor(R.color.warning_color));
                 }
-
             }
         }
     }
 
     private void setLoadingViewState() {
         mIPAddress = getResources().getString(R.string.loading_message);
+        mISP = getResources().getString(R.string.loading_message);
         mCountry = getResources().getString(R.string.loading_message);
         mCity = getResources().getString(R.string.loading_message);
         mRegion = getResources().getString(R.string.loading_message);
@@ -182,67 +190,155 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener, 
         updateViewState();
     }
 
+    /* 
+     * Simple GeoIpProvider automatic failover:
+     * Always make requests using the first item in the List.
+     * On failure, move the first item to the end.
+     * If mFailovers < mMaxFailovers, increment mFailovers, and make the request again.
+     * Set mFailovers to 0 whenever not failing over.
+     */
+
     public void makeIPAddressInfoRequest() {
-        if (IPAddressRequestTaskIsPendingOrRunning()) {
-            return;
+        mGeoIpProviders.get(0).makeRequest();
+    }
+    
+    private void onRequestCompleted() {
+        if (mLastUpdateSucceeded) {
+            requestsDone();
+        } else {
+            mGeoIpProviders.add(mGeoIpProviders.remove(0));
+            if (mFailovers < mMaxFailovers) {
+                mFailovers++;
+                makeIPAddressInfoRequest();
+            } else {
+                requestsDone();
+            }
         }
-
-        AsyncHTTPRequest ipAddressRequestTask = new AsyncHTTPRequest(this, getProxySettings());
-        this.mRequestTaskWeakRef = new WeakReference<AsyncHTTPRequest>(ipAddressRequestTask);
-        ipAddressRequestTask.execute(IP_ADDRESS_INFO_REQUEST_URL);
     }
-
-    private Proxy getProxySettings() {
-        Proxy proxySettings = Proxy.NO_PROXY;
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean useProxy = preferences.getBoolean(getResources().getString(R.string.PREFERENCE_USE_PROXY), false);
-
-        if (useProxy) {
-            int proxyPort = preferences.getInt(getResources().getString(R.string.PREFERENCE_PROXY_PORT), 0);
-            InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("127.0.0.1", proxyPort);
-            proxySettings = new Proxy(Proxy.Type.HTTP, socketAddress);
-        }
-
-        return proxySettings;
-    }
-
-    private boolean IPAddressRequestTaskIsPendingOrRunning() {
-        return this.mRequestTaskWeakRef != null && this.mRequestTaskWeakRef.get() != null
-                && !this.mRequestTaskWeakRef.get().getStatus().equals(Status.FINISHED);
-    }
-
-    private boolean processIPAddressInfoResponse(String response) {
-        mIPAddress = "";
-        mCountry = "";
-        mCity = "";
-        mRegion = "";
-        mLatLong = "";
-        try {
-            JSONObject json = new JSONObject(response);
-            mIPAddress = json.getString("ip");
-            mCountry = json.getString("country_name");
-            mCity = json.getString("city");
-            mRegion = json.getString("region_name");
-            mLatLong = json.getString("latitude") + "," + json.getString("longitude");
-            return true;
-        } catch (JSONException e) {
-
-        }
-        return false;
-    }
-
-    @Override
-    public void onPreExecute() {
-        setLoadingViewState();
-    }
-
-    @Override
-    public void onPostExecute(String result, long elapsedTime, boolean timedOut) {
-        mLastUpdateTimedOut = timedOut;
-        mLastUpdateSucceeded = processIPAddressInfoResponse(result);
-        mLastUpdateElapsedTimeMs = elapsedTime;
-        mLastUpdateTime = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date());
+    
+    private void requestsDone() {
+        mFailovers = 0;
         updateViewState();
+    }
+
+    public abstract class GeoIpServiceRequestCaller implements AsyncHTTPRequest.RequestTaskCaller {
+        private WeakReference<AsyncHTTPRequest> mRequestTaskWeakRef;
+
+        public synchronized void makeRequest() {
+            if (IPAddressRequestTaskIsPendingOrRunning()) {
+                return;
+            }
+            
+            AsyncHTTPRequest ipAddressRequestTask = new AsyncHTTPRequest(this, getProxySettings());
+            mRequestTaskWeakRef = new WeakReference<AsyncHTTPRequest>(ipAddressRequestTask);
+            ipAddressRequestTask.execute(requestURL());
+        }
+        
+        private boolean IPAddressRequestTaskIsPendingOrRunning() {
+            return this.mRequestTaskWeakRef != null && this.mRequestTaskWeakRef.get() != null
+                    && !this.mRequestTaskWeakRef.get().getStatus().equals(Status.FINISHED);
+        }
+
+        private Proxy getProxySettings() {
+            Proxy proxySettings = Proxy.NO_PROXY;
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            boolean useProxy = preferences.getBoolean(getResources().getString(R.string.PREFERENCE_USE_PROXY), false);
+
+            if (useProxy) {
+                int proxyPort = preferences.getInt(getResources().getString(R.string.PREFERENCE_PROXY_PORT), 0);
+                InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("127.0.0.1", proxyPort);
+                proxySettings = new Proxy(Proxy.Type.HTTP, socketAddress);
+            }
+
+            return proxySettings;
+        }
+
+        @Override
+        public void onPreExecute() {
+            setLoadingViewState();
+        }
+    
+        @Override
+        public void onPostExecute(String result, long elapsedTime, boolean timedOut) {
+            mIPAddress = "";
+            mISP = "";
+            mCountry = "";
+            mCity = "";
+            mRegion = "";
+            mLatLong = "";
+
+            mLastUpdateTimedOut = timedOut;
+            mLastUpdateSucceeded = processIPAddressInfoResponse(result);
+            mLastUpdateElapsedTimeMs = elapsedTime;
+            mLastUpdateTime = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date());
+            onRequestCompleted();
+        }
+        
+        protected abstract String requestURL();
+        
+        protected abstract boolean processIPAddressInfoResponse(String response);
+    }
+    
+    public class FreegeoipDotNetRequestCaller extends GeoIpServiceRequestCaller {
+        @Override
+        public String requestURL() {
+            return "http://freegeoip.net/json/";
+        }
+        
+        @Override
+        protected boolean processIPAddressInfoResponse(String response) {
+            try {
+                JSONObject json = new JSONObject(response);
+                mIPAddress = json.getString("ip");
+                mISP = "";
+                mCountry = json.getString("country_name");
+                mCity = json.getString("city");
+                mRegion = json.getString("region_name");
+                mLatLong = json.getString("latitude") + "," + json.getString("longitude");
+                return true;
+            } catch (JSONException e) {
+
+            }
+            return false;
+        }
+    }
+    
+    public class TelizeDotComRequestCaller extends GeoIpServiceRequestCaller {
+        @Override
+        public String requestURL() {
+            return "http://www.telize.com/geoip/";
+        }
+        
+        @Override
+        protected boolean processIPAddressInfoResponse(String response) {
+            try {
+                JSONObject json = new JSONObject(response);
+                // If there is no IP Address, we should fail
+                mIPAddress = json.getString("ip");
+                mISP = safeGetJSONString(json, "isp");
+                mCountry = safeGetJSONString(json, "country");
+                mCity = safeGetJSONString(json, "city");
+                mRegion = safeGetJSONString(json, "region");
+                mLatLong = "";
+                String latitude = safeGetJSONString(json, "latitude");
+                String longitude = safeGetJSONString(json, "longitude");
+                if (latitude.length() > 0 && longitude.length() > 0) {
+                    mLatLong = latitude + "," + longitude;
+                }
+                return true;
+            } catch (JSONException e) {
+
+            }
+            return false;
+        }
+    }
+    
+    private static String safeGetJSONString(JSONObject json, String key) throws JSONException {
+        String jsonString = "";
+        if (json.has(key)) {
+            jsonString = json.getString(key);
+        }
+        return jsonString;
     }
 }
