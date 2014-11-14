@@ -6,8 +6,8 @@
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/lastUpdateStatus"
         android:background="@color/background_color_dark"
         android:fadeScrollbars="false" >
@@ -16,7 +16,8 @@
             android:id="@+id/ipAddressFragmentTableLayout"
             style="@style/IPAddressTableLayoutStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1" >
 
             <TableRow
                 android:id="@+id/tableRowIpAdress"
@@ -35,6 +36,29 @@
 
                 <TextView
                     android:id="@+id/ipValue"
+                    style="@style/IPAddressInfoStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/light_text_color" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRowISP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal" >
+
+                <TextView
+                    android:id="@+id/ispLabel"
+                    style="@style/IPAddressInfoStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="@string/label_isp"
+                    android:textColor="@color/label_color" />
+
+                <TextView
+                    android:id="@+id/ispValue"
                     style="@style/IPAddressInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
