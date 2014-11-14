@@ -145,10 +145,15 @@ public class MainActivity extends ActionBarActivity {
                         SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);
                         if (slidingPanelLayout != null) {
                             int ipAddressFragmentHeight = mIPAddressInfoFragment.getOptimalHeight();
+                            // TODO: dimen
+                            int minimumPanelHeight = (int) (60 * getResources().getDisplayMetrics().density + 0.5f);
 
                             int optimalSlidingPanelHeight = slidingPanelLayout.getBottom() - ipAddressFragmentHeight;
-                            if (optimalSlidingPanelHeight > slidingPanelLayout.getPanelHeight()) {
+                            if (optimalSlidingPanelHeight > minimumPanelHeight) {
                                 slidingPanelLayout.setPanelHeight(optimalSlidingPanelHeight);
+                                // Sometimes changing the sliding panel height leaves a shadow artifact.
+                                // This forces the IP Address fragment to redraw.
+                                mIPAddressInfoFragment.getView().invalidate();
                             }
                         }
                     }
@@ -192,6 +197,18 @@ public class MainActivity extends ActionBarActivity {
     public void refreshNetworkInfo() {
         if (mNetworkInfoFragment != null && mNetworkInfoFragment.isVisible()) {
             mNetworkInfoFragment.refresh();
+        }
+    }
+    
+    @Override
+    public void onBackPressed() {
+        SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);
+        if (slidingPanelLayout != null) {
+            if (slidingPanelLayout.isPanelExpanded()) {
+                slidingPanelLayout.collapsePanel();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 }
