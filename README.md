@@ -6,7 +6,7 @@ Overview
 
 A simple Android app for querying your external (public) IP address, country, and more.
 
-This app makes HTTP requests to [freegeoip.net](http://freegeoip.net/). That service includes GeoLite data created by MaxMind, available from [maxmind.com](http://www.maxmind.com/).
+This app makes HTTP requests to [freegeoip.net](http://freegeoip.net/) and [Telize](http://www.telize.com/). Those services include GeoLite data created by MaxMind, available from [maxmind.com](http://www.maxmind.com/).
 
 License
 --------------
