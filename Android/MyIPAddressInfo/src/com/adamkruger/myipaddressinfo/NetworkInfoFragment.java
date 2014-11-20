@@ -119,7 +119,7 @@ public class NetworkInfoFragment extends Fragment {
         if (mWifiEnabled) {
             if (mWifiInfo != null) {
                 String wifiSSID = mWifiInfo.getSSID();
-                if (wifiSSID.length() > 0) {
+                if (wifiSSID != null && wifiSSID.length() > 0) {
                     addTableRowSpacer();
                     addTableRowTitle(context.getString(R.string.network_info_subtitle_wifi_info));
                     addTableRow(new Row().addLine(
