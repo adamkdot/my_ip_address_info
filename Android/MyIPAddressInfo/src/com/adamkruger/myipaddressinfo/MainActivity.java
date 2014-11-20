@@ -42,6 +42,7 @@ public class MainActivity extends ActionBarActivity {
     private IPAddressInfoFragment mIPAddressInfoFragment;
     private NetworkInfoFragment mNetworkInfoFragment;
     private ProxySettingsFragment mProxySettingsFragment;
+    private GeoIPProviderSettingsFragment mGeoIPProviderSettingsFragment;
     private ViewPager mAdditionalInfoPager;
     private AdditionalInfoFragmentPagerAdapter mAdditionalInfoPagerAdapter;
     private CirclePageIndicator mAdditionalInfoPageIndicator;
@@ -115,6 +116,8 @@ public class MainActivity extends ActionBarActivity {
                 + R.id.other_info_container + ":" + 0);
         mProxySettingsFragment = (ProxySettingsFragment) fragmentManager.findFragmentByTag("android:switcher:"
                 + R.id.other_info_container + ":" + 1);
+        mGeoIPProviderSettingsFragment = (GeoIPProviderSettingsFragment) fragmentManager.findFragmentByTag("android:switcher:"
+                + R.id.other_info_container + ":" + 2);
 
         if (mNetworkInfoFragment == null) {
             mNetworkInfoFragment = new NetworkInfoFragment();
@@ -124,8 +127,13 @@ public class MainActivity extends ActionBarActivity {
             mProxySettingsFragment = new ProxySettingsFragment();
         }
 
+        if (mGeoIPProviderSettingsFragment == null) {
+            mGeoIPProviderSettingsFragment = new GeoIPProviderSettingsFragment();
+        }
+
         mAdditionalInfoPagerAdapter = new AdditionalInfoFragmentPagerAdapter(fragmentManager);
-        mAdditionalInfoPagerAdapter.SetPages(new Fragment[] { mNetworkInfoFragment, mProxySettingsFragment });
+        mAdditionalInfoPagerAdapter.SetPages(new Fragment[] { mNetworkInfoFragment, mProxySettingsFragment,
+                mGeoIPProviderSettingsFragment });
         mAdditionalInfoPager.setAdapter(mAdditionalInfoPagerAdapter);
         mAdditionalInfoPageIndicator.setViewPager(mAdditionalInfoPager);
         mAdditionalInfoPageIndicator.setOnPageChangeListener(new AdditionalInfoPageChangeListener(this));
@@ -133,7 +141,7 @@ public class MainActivity extends ActionBarActivity {
         int additionalInfoCurrentPage = PreferenceManager.getDefaultSharedPreferences(this).getInt(
                 getResources().getString(R.string.PREFERENCE_ADDITIONAL_INFO_PAGE), 0);
         mAdditionalInfoPager.setCurrentItem(additionalInfoCurrentPage);
-        
+
         findViewById(R.id.ip_address_info_container).getViewTreeObserver().addOnGlobalLayoutListener(
                 new OnGlobalLayoutListener() {
                     @Override
@@ -151,8 +159,10 @@ public class MainActivity extends ActionBarActivity {
                             int optimalSlidingPanelHeight = slidingPanelLayout.getBottom() - ipAddressFragmentHeight;
                             if (optimalSlidingPanelHeight > minimumPanelHeight) {
                                 slidingPanelLayout.setPanelHeight(optimalSlidingPanelHeight);
-                                // Sometimes changing the sliding panel height leaves a shadow artifact.
-                                // This forces the IP Address fragment to redraw.
+                                // Sometimes changing the sliding panel height
+                                // leaves a shadow artifact.
+                                // This forces the IP Address fragment to
+                                // redraw.
                                 mIPAddressInfoFragment.getView().invalidate();
                             }
                         }
@@ -199,7 +209,7 @@ public class MainActivity extends ActionBarActivity {
             mNetworkInfoFragment.refresh();
         }
     }
-    
+
     @Override
     public void onBackPressed() {
         SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);

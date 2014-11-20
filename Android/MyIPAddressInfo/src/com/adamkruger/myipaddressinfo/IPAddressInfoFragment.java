@@ -60,6 +60,8 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
     private String mLastUpdateTime;
     private int mDefaultLastUpdateTimeColor;
     private ArrayList<GeoIpServiceRequestCaller> mGeoIpProviders;
+    private TelizeDotComRequestCaller mTelizeDotComRequestCaller;
+    private FreegeoipDotNetRequestCaller mFreegeoipDotNetRequestCaller;
     private int mMaxFailovers;
     private int mFailovers;
 
@@ -69,8 +71,10 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
         setRetainInstance(true);
 
         mGeoIpProviders = new ArrayList<GeoIpServiceRequestCaller>();
-        mGeoIpProviders.add(new TelizeDotComRequestCaller());
-        mGeoIpProviders.add(new FreegeoipDotNetRequestCaller());
+        mTelizeDotComRequestCaller = new TelizeDotComRequestCaller();
+        mFreegeoipDotNetRequestCaller = new FreegeoipDotNetRequestCaller();
+        mGeoIpProviders.add(mTelizeDotComRequestCaller);
+        mGeoIpProviders.add(mFreegeoipDotNetRequestCaller);
         mMaxFailovers = mGeoIpProviders.size() - 1;
         mFailovers = 0;
         
@@ -199,13 +203,21 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
      */
 
     public void makeIPAddressInfoRequest() {
-        mGeoIpProviders.get(0).makeRequest();
+        String providerPreference = GeoIPProviderSettingsFragment.getProviderPreference(getActivity());
+        if (providerPreference.equals(getResources().getString(R.string.PREFERENCE_GEOIP_PROVIDER_AUTO))) {
+            mGeoIpProviders.get(0).makeRequest();
+        } else if (providerPreference.equals(getResources().getString(R.string.PREFERENCE_GEOIP_PROVIDER_FREEGEOIPDOTNET))) {
+            mFreegeoipDotNetRequestCaller.makeRequest();
+        } else if (providerPreference.equals(getResources().getString(R.string.PREFERENCE_GEOIP_PROVIDER_TELIZEDOTCOM))) {
+            mTelizeDotComRequestCaller.makeRequest();
+        }
     }
     
     private void onRequestCompleted() {
         if (mLastUpdateSucceeded) {
             requestsDone();
-        } else {
+        } else if (GeoIPProviderSettingsFragment.getProviderPreference(getActivity()).equals(
+                (getResources().getString(R.string.PREFERENCE_GEOIP_PROVIDER_AUTO)))) {
             mGeoIpProviders.add(mGeoIpProviders.remove(0));
             if (mFailovers < mMaxFailovers) {
                 mFailovers++;
@@ -213,6 +225,8 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             } else {
                 requestsDone();
             }
+        } else {
+            requestsDone();
         }
     }
     

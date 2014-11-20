@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/geoipProviderSettingsLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/geoipProviderSettingsHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" >
+
+        <TextView
+            android:id="@+id/geoipProviderSettingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/title_padding"
+            android:text="@string/geoip_provider_settings_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" 
+            android:textColor="@color/title_color" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/geoipProviderSettingsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/geoipProviderSettingsHeader"
+        android:fadeScrollbars="false" >
+
+        <RadioGroup
+            android:id="@+id/geoipProviderSettingsRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:checkedButton="@+id/geoipProviderSettingsRadioAuto" >
+
+            <RadioButton
+                android:id="@+id/geoipProviderSettingsRadioAuto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/geoip_provider_settings_radio_auto"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <RadioButton
+                android:id="@+id/geoipProviderSettingsRadioFreeGeoIPDotNet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/geoip_provider_settings_radio_freegeoipdotnet"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <RadioButton
+                android:id="@+id/geoipProviderSettingsRadioTelizeDotCom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/geoip_provider_settings_radio_telizedotcom"
+                android:textColor="@color/dark_text_color"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </RadioGroup>
+        
+    </ScrollView>
+
+</RelativeLayout>

@@ -35,5 +35,9 @@
     <string name="network_info_label_lease_duration">Lease Duration</string>
     <string name="network_info_label_mtu">MTU</string>
     <string name="network_info_label_dns">DNS</string>
+    <string name="geoip_provider_settings_title">GeoIP Provider</string>
+    <string name="geoip_provider_settings_radio_auto">Automatic</string>
+    <string name="geoip_provider_settings_radio_freegeoipdotnet">freegeoip.net</string>
+    <string name="geoip_provider_settings_radio_telizedotcom">Telize</string>
 
 </resources>
