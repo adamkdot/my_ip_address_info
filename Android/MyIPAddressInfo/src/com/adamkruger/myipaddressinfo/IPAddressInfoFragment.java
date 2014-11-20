@@ -37,6 +37,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -59,6 +60,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
     private long mLastUpdateElapsedTimeMs;
     private String mLastUpdateTime;
     private int mDefaultLastUpdateTimeColor;
+    private WeakReference<AsyncHTTPRequest> mRequestTaskWeakRef;
     private ArrayList<GeoIpServiceRequestCaller> mGeoIpProviders;
     private TelizeDotComRequestCaller mTelizeDotComRequestCaller;
     private FreegeoipDotNetRequestCaller mFreegeoipDotNetRequestCaller;
@@ -77,7 +79,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
         mGeoIpProviders.add(mFreegeoipDotNetRequestCaller);
         mMaxFailovers = mGeoIpProviders.size() - 1;
         mFailovers = 0;
-        
+
         makeIPAddressInfoRequest();
     }
 
@@ -97,7 +99,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
         mDefaultLastUpdateTimeColor = ((TextView) rootView.findViewById(R.id.lastUpdateTime)).getTextColors().getDefaultColor();
         return rootView;
     }
-    
+
     public int getOptimalHeight() {
         int height = 0;
         View view = getView();
@@ -194,12 +196,11 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
         updateViewState();
     }
 
-    /* 
-     * Simple GeoIpProvider automatic failover:
-     * Always make requests using the first item in the List.
-     * On failure, move the first item to the end.
-     * If mFailovers < mMaxFailovers, increment mFailovers, and make the request again.
-     * Set mFailovers to 0 whenever not failing over.
+    /*
+     * Simple GeoIpProvider automatic failover: Always make requests using the
+     * first item in the List. On failure, move the first item to the end. If
+     * mFailovers < mMaxFailovers, increment mFailovers, and make the request
+     * again. Set mFailovers to 0 whenever not failing over.
      */
 
     public void makeIPAddressInfoRequest() {
@@ -212,7 +213,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             mTelizeDotComRequestCaller.makeRequest();
         }
     }
-    
+
     private void onRequestCompleted() {
         if (mLastUpdateSucceeded) {
             requestsDone();
@@ -229,28 +230,26 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             requestsDone();
         }
     }
-    
+
     private void requestsDone() {
         mFailovers = 0;
         updateViewState();
     }
 
     public abstract class GeoIpServiceRequestCaller implements AsyncHTTPRequest.RequestTaskCaller {
-        private WeakReference<AsyncHTTPRequest> mRequestTaskWeakRef;
-
         public synchronized void makeRequest() {
             if (IPAddressRequestTaskIsPendingOrRunning()) {
                 return;
             }
-            
+
             AsyncHTTPRequest ipAddressRequestTask = new AsyncHTTPRequest(this, getProxySettings());
             mRequestTaskWeakRef = new WeakReference<AsyncHTTPRequest>(ipAddressRequestTask);
             ipAddressRequestTask.execute(requestURL());
         }
-        
+
         private boolean IPAddressRequestTaskIsPendingOrRunning() {
-            return this.mRequestTaskWeakRef != null && this.mRequestTaskWeakRef.get() != null
-                    && !this.mRequestTaskWeakRef.get().getStatus().equals(Status.FINISHED);
+            return mRequestTaskWeakRef != null && mRequestTaskWeakRef.get() != null
+                    && !mRequestTaskWeakRef.get().getStatus().equals(Status.FINISHED);
         }
 
         private Proxy getProxySettings() {
@@ -272,7 +271,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
         public void onPreExecute() {
             setLoadingViewState();
         }
-    
+
         @Override
         public void onPostExecute(String result, long elapsedTime, boolean timedOut) {
             mIPAddress = "";
@@ -286,20 +285,31 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             mLastUpdateSucceeded = processIPAddressInfoResponse(result);
             mLastUpdateElapsedTimeMs = elapsedTime;
             mLastUpdateTime = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date());
-            onRequestCompleted();
+
+            // Attempt to post onRequestCompleted so that this asyncTask can
+            // finish in case we need to fail over and start a new asyncTask
+            Handler handler = new Handler();
+            boolean postSuccess = handler.post(new Runnable() {
+                public void run() {
+                    onRequestCompleted();
+                }
+            });
+            if (!postSuccess) {
+                onRequestCompleted();
+            }
         }
-        
+
         protected abstract String requestURL();
-        
+
         protected abstract boolean processIPAddressInfoResponse(String response);
     }
-    
+
     public class FreegeoipDotNetRequestCaller extends GeoIpServiceRequestCaller {
         @Override
         public String requestURL() {
             return "http://freegeoip.net/json/";
         }
-        
+
         @Override
         protected boolean processIPAddressInfoResponse(String response) {
             try {
@@ -317,13 +327,13 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             return false;
         }
     }
-    
+
     public class TelizeDotComRequestCaller extends GeoIpServiceRequestCaller {
         @Override
         public String requestURL() {
             return "http://www.telize.com/geoip/";
         }
-        
+
         @Override
         protected boolean processIPAddressInfoResponse(String response) {
             try {
@@ -347,7 +357,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             return false;
         }
     }
-    
+
     private static String safeGetJSONString(JSONObject json, String key) throws JSONException {
         String jsonString = "";
         if (json.has(key)) {
