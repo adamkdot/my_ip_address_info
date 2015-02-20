@@ -19,6 +19,11 @@
 
 package com.adamkruger.myipaddressinfo;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -29,10 +34,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 
@@ -46,6 +54,8 @@ public class MainActivity extends ActionBarActivity {
     private ViewPager mAdditionalInfoPager;
     private AdditionalInfoFragmentPagerAdapter mAdditionalInfoPagerAdapter;
     private CirclePageIndicator mAdditionalInfoPageIndicator;
+    private AdView mBannerAdView;
+    private InterstitialAd mInterstitialAd;
 
     public static class AdditionalInfoFragmentPagerAdapter extends FragmentPagerAdapter {
 
@@ -157,6 +167,9 @@ public class MainActivity extends ActionBarActivity {
                             int minimumPanelHeight = (int) (60 * getResources().getDisplayMetrics().density + 0.5f);
 
                             int optimalSlidingPanelHeight = slidingPanelLayout.getBottom() - ipAddressFragmentHeight;
+                            if (mBannerAdView != null) {
+                                optimalSlidingPanelHeight -= mBannerAdView.getHeight();
+                            }
                             if (optimalSlidingPanelHeight > minimumPanelHeight) {
                                 slidingPanelLayout.setPanelHeight(optimalSlidingPanelHeight);
                                 // Sometimes changing the sliding panel height
@@ -169,14 +182,34 @@ public class MainActivity extends ActionBarActivity {
                     }
                 });
     }
-
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mBannerAdView != null) {
+            mBannerAdView.pause();
+        }
+    }
+    
     @Override
     public void onResume() {
         super.onResume();
-
+        initAds();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        showInterstitialAd();
+        if (mBannerAdView != null) {
+            mBannerAdView.resume();
+        }
     }
 
+    @Override
+    public void onDestroy() {
+        if (mBannerAdView != null) {
+            mBannerAdView.destroy();
+        }
+        super.onDestroy();
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -202,6 +235,7 @@ public class MainActivity extends ActionBarActivity {
         if (mIPAddressInfoFragment != null && mIPAddressInfoFragment.isVisible()) {
             mIPAddressInfoFragment.makeIPAddressInfoRequest();
         }
+        showInterstitialAd();
     }
 
     public void refreshNetworkInfo() {
@@ -213,12 +247,72 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         SlidingUpPanelLayout slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel_layout);
-        if (slidingPanelLayout != null) {
-            if (slidingPanelLayout.isPanelExpanded()) {
+        if (slidingPanelLayout != null && slidingPanelLayout.isPanelExpanded()) {
                 slidingPanelLayout.collapsePanel();
-            } else {
-                super.onBackPressed();
-            }
+        } else {
+            super.onBackPressed();
+        }
+    }
+    
+    private void showInterstitialAd() {
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
+    }
+    
+    private void initAds() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.FROYO) {
+            return;
+        }
+        
+        if (mBannerAdView == null) {
+            mBannerAdView = new AdView(this);
+            mBannerAdView.setAdSize(AdSize.SMART_BANNER);
+            mBannerAdView.setAdUnitId(getString(R.string.banner_ad_unit_id));
+            mBannerAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded()
+                {
+                    View stubView = findViewById(R.id.bannerAdViewStub);
+                    if (stubView != null) {
+                        ViewGroup parent = (ViewGroup)stubView.getParent();
+                        if (parent != null) {
+                            int index = parent.indexOfChild(stubView);
+                            parent.removeView(stubView);
+                            parent.addView(mBannerAdView, index);
+                        }
+                    }
+                }
+                @Override
+                public void onAdFailedToLoad(int errorCode)
+                {
+                    mBannerAdView = null;
+                }
+            });
+            AdRequest bannerAdRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("AFF55E9917949EF5CDAB182729BC72A1")
+                .addTestDevice("04CEF367A9A9433242C8C8DCF41D13BC")
+                .build();
+            mBannerAdView.loadAd(bannerAdRequest);
+        }
+
+        if (mInterstitialAd == null) {
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    // Set to null so it will be re-initialized the next time
+                    mInterstitialAd = null;
+                }
+            });
+            AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("AFF55E9917949EF5CDAB182729BC72A1")
+                .addTestDevice("04CEF367A9A9433242C8C8DCF41D13BC")
+                .build();
+            mInterstitialAd.loadAd(adRequest);
         }
     }
 }

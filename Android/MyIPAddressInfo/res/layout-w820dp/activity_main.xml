@@ -3,33 +3,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="true"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context="com.adamkruger.myipaddressinfo.MainActivity" >
 
-    <FrameLayout
-        android:id="@+id/ip_address_info_container"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/background_color" />
+    <ViewStub android:id="@+id/bannerAdViewStub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:layout_width="0px"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/background_color_light"
-        android:orientation="vertical" >
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
 
-        <com.viewpagerindicator.CirclePageIndicator
-            android:id="@+id/other_info_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/title_padding" />
+	   <FrameLayout
+	        android:id="@+id/ip_address_info_container"
+	        android:layout_width="0px"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        android:background="@color/background_color" />
+	
+	    <LinearLayout
+	        android:layout_width="0px"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        android:background="@color/background_color_light"
+	        android:orientation="vertical" >
+	
+	        <com.viewpagerindicator.CirclePageIndicator
+	            android:id="@+id/other_info_indicator"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:paddingTop="@dimen/title_padding" />
+	
+	        <android.support.v4.view.ViewPager
+	            android:id="@+id/other_info_container"
+	            android:layout_width="match_parent"
+	            android:layout_height="fill_parent" />
+	    </LinearLayout>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/other_info_container"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent" />
-    </LinearLayout>
-
+	</LinearLayout>
+	
 </LinearLayout>

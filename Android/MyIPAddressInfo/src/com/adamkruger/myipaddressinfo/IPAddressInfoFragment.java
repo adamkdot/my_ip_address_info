@@ -274,6 +274,10 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
 
         @Override
         public void onPostExecute(String result, long elapsedTime, boolean timedOut) {
+            if (getActivity() == null) {
+                return;
+            }
+            
             mIPAddress = "";
             mISP = "";
             mCountry = "";
