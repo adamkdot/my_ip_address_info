@@ -7,4 +7,7 @@
     <string name="PREFERENCE_GEOIP_PROVIDER_AUTO">PREFERENCE_GEOIP_PROVIDER_AUTO</string>
     <string name="PREFERENCE_GEOIP_PROVIDER_FREEGEOIPDOTNET">PREFERENCE_GEOIP_PROVIDER_FREEGEOIPDOTNET</string>
     <string name="PREFERENCE_GEOIP_PROVIDER_TELIZEDOTCOM">PREFERENCE_GEOIP_PROVIDER_TELIZEDOTCOM</string>
+    <string name="banner_ad_unit_id"></string>
+    <string name="interstitial_ad_unit_id"></string>
+    
 </resources>

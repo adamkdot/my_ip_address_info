@@ -196,7 +196,6 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
         initAds();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        showInterstitialAd();
         if (mBannerAdView != null) {
             mBannerAdView.resume();
         }
@@ -254,9 +253,17 @@ public class MainActivity extends ActionBarActivity {
         }
     }
     
+    private int mInterstitialCounter = 0;
     private void showInterstitialAd() {
+        mInterstitialCounter++;
+        if (mInterstitialCounter % 3 != 0) {
+            return;
+        }
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
+            
+            mInterstitialAd = null;
+            initAds();
         }
     }
     

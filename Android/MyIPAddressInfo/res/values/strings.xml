@@ -39,7 +39,5 @@
     <string name="geoip_provider_settings_radio_auto">Automatic</string>
     <string name="geoip_provider_settings_radio_freegeoipdotnet">freegeoip.net</string>
     <string name="geoip_provider_settings_radio_telizedotcom">Telize</string>
-    <string name="banner_ad_unit_id"></string>
-    <string name="interstitial_ad_unit_id"></string>
 
 </resources>
