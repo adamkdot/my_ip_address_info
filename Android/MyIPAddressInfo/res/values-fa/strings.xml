@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">آی پی من و بیشتر</string>
+    <string name="app_name">دکتر آی پی</string>
     <string name="action_settings">تنظیمات</string>
     <string name="action_refresh">بارگذاری مجدد</string>
     <string name="label_ip">نشانی آی‌پی</string>
