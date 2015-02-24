@@ -4,21 +4,40 @@
     <string name="app_name">آی پی من و بیشتر</string>
     <string name="action_settings">تنظیمات</string>
     <string name="action_refresh">بارگذاری مجدد</string>
-    <string name="label_ip">آدرس آی پی</string>
+    <string name="label_ip">نشانی آی‌پی</string>
+    <string name="label_isp">رسانندهٔ خدمات اینترنتی</string>
     <string name="label_country">کشور</string>
     <string name="label_city">شهر</string>
-    <string name="label_region">منطقه</string>
+    <string name="label_region">استان</string>
     <string name="label_coordinates">نقشه</string>
     <string name="last_update_status_success">درخواست در %d میلی ثانیه انجام شد.</string>
     <string name="last_update_status_fail">درخواست بعد از %d میلی ثانیه ناموفق بود.</string>
     <string name="last_update_status_timeout">درخواست بعد از %d ثانیه به موفقت انجام نشد.</string>
     <string name="last_update_time">آخرین به روز رسانی %s</string>
     <string name="loading_message">در حال بارگذاری&#8230;</string>
-    <string name="proxy_settings_title">اتنخاب پورت و نحوه پراکسی</string>
-    <string name="proxy_settings_radio_none">بدون پروکسی</string>
+    <string name="proxy_settings_title">پورت محلی اچ تی تی پی پراکسی</string>
+    <string name="proxy_settings_radio_none">بدون پراکسی</string>
     <string name="proxy_settings_radio_psiphon">سایفون پورت 8080</string>
-    <string name="proxy_settings_radio_tor">اربوت پورت 8118</string>
+    <string name="proxy_settings_radio_tor">اوربات پورت 8118</string>
     <string name="proxy_settings_radio_custom">پورت شخصی</string>
     <string name="proxy_settings_custom_port">پورت</string>
+    <string name="network_info_title">رابط شبکه</string>
+    <string name="network_info_subtitle_active_network">شبکه فعال</string>
+    <string name="network_info_subtitle_wifi_info">وای فای</string>
+    <string name="network_info_subtitle_dhcp_info">پروتکل پیکربندی پویای میزبان</string>
+    
+    
+    
+    <string name="network_info_label_ip_address">نشانی آی‌پی</string>
+    <string name="network_info_label_gateway">دروازه (ارتباطات)</string>
+    
+    <string name="network_info_label_dhcp_server">سرور DHCP</string>
+    <string name="network_info_label_lease_duration">مدت اجاره</string>
 
+    <string name="network_info_label_dns">سامانهٔ نام دامنه</string>
+    <string name="geoip_provider_settings_title">ارائه دهنده منطقه جغرافیایی آی پی</string>
+    <string name="geoip_provider_settings_radio_auto">خودکار</string>
+
+
+    
 </resources>
