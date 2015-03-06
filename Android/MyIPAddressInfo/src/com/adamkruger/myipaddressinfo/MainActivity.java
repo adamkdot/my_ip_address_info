@@ -24,6 +24,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.purplebrain.adbuddiz.sdk.AdBuddiz;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -181,6 +182,9 @@ public class MainActivity extends ActionBarActivity {
                         }
                     }
                 });
+        
+        AdBuddiz.setPublisherKey(getString(R.string.ad_buddiz_publisher_key));
+        AdBuddiz.cacheAds(this);
     }
     
     @Override
@@ -256,14 +260,20 @@ public class MainActivity extends ActionBarActivity {
     private int mInterstitialCounter = 0;
     private void showInterstitialAd() {
         mInterstitialCounter++;
-        if (mInterstitialCounter % 3 != 0) {
+        if (mInterstitialCounter % 2 != 0) {
             return;
         }
-        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-            
-            mInterstitialAd = null;
-            initAds();
+        if (mInterstitialCounter % 4 == 0) {
+            if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+                
+                mInterstitialAd = null;
+                initAds();
+            }
+        } else {
+            if (AdBuddiz.isReadyToShowAd(this)) {
+                AdBuddiz.showAd(this);
+            }
         }
     }
     

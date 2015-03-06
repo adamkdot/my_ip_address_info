@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.adamkruger.myipaddressinfo"
-    android:versionCode="11"
-    android:versionName="1.5" >
+    android:versionCode="12"
+    android:versionName="1.5.1" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -31,6 +31,10 @@
         <activity android:name="com.google.android.gms.ads.AdActivity"
              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
              android:theme="@android:style/Theme.Translucent" />
+        
+        <activity android:name="com.purplebrain.adbuddiz.sdk.AdBuddizActivity" 
+               android:theme="@android:style/Theme.Translucent" />
+        
     </application>
 
 </manifest>
