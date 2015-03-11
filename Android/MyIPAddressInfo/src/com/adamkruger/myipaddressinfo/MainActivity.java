@@ -19,6 +19,9 @@
 
 package com.adamkruger.myipaddressinfo;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -55,8 +58,8 @@ public class MainActivity extends ActionBarActivity {
     private ViewPager mAdditionalInfoPager;
     private AdditionalInfoFragmentPagerAdapter mAdditionalInfoPagerAdapter;
     private CirclePageIndicator mAdditionalInfoPageIndicator;
-    private AdView mBannerAdView;
-    private InterstitialAd mInterstitialAd;
+    private AdView mAdMobBannerAdView;
+    private InterstitialAd mAdMobInterstitialAd;
 
     public static class AdditionalInfoFragmentPagerAdapter extends FragmentPagerAdapter {
 
@@ -168,8 +171,8 @@ public class MainActivity extends ActionBarActivity {
                             int minimumPanelHeight = (int) (60 * getResources().getDisplayMetrics().density + 0.5f);
 
                             int optimalSlidingPanelHeight = slidingPanelLayout.getBottom() - ipAddressFragmentHeight;
-                            if (mBannerAdView != null) {
-                                optimalSlidingPanelHeight -= mBannerAdView.getHeight();
+                            if (mAdMobBannerAdView != null) {
+                                optimalSlidingPanelHeight -= mAdMobBannerAdView.getHeight();
                             }
                             if (optimalSlidingPanelHeight > minimumPanelHeight) {
                                 slidingPanelLayout.setPanelHeight(optimalSlidingPanelHeight);
@@ -190,8 +193,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (mBannerAdView != null) {
-            mBannerAdView.pause();
+        if (mAdMobBannerAdView != null) {
+            mAdMobBannerAdView.pause();
         }
     }
     
@@ -200,15 +203,15 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
         initAds();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        if (mBannerAdView != null) {
-            mBannerAdView.resume();
+        if (mAdMobBannerAdView != null) {
+            mAdMobBannerAdView.resume();
         }
     }
 
     @Override
     public void onDestroy() {
-        if (mBannerAdView != null) {
-            mBannerAdView.destroy();
+        if (mAdMobBannerAdView != null) {
+            mAdMobBannerAdView.destroy();
         }
         super.onDestroy();
     }
@@ -238,7 +241,7 @@ public class MainActivity extends ActionBarActivity {
         if (mIPAddressInfoFragment != null && mIPAddressInfoFragment.isVisible()) {
             mIPAddressInfoFragment.makeIPAddressInfoRequest();
         }
-        showInterstitialAd();
+        showFullScreenAd();
     }
 
     public void refreshNetworkInfo() {
@@ -257,23 +260,47 @@ public class MainActivity extends ActionBarActivity {
         }
     }
     
-    private int mInterstitialCounter = 0;
-    private void showInterstitialAd() {
-        mInterstitialCounter++;
-        if (mInterstitialCounter % 2 != 0) {
+    private int mFullScreenAdCounter = 0;
+    private void showFullScreenAd() {
+        mFullScreenAdCounter++;
+        if (mFullScreenAdCounter % 2 != 0) {
             return;
         }
-        if (mInterstitialCounter % 4 == 0) {
-            if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-                
-                mInterstitialAd = null;
-                initAds();
+        
+        ArrayList<FullScreenAd> fullScreenAds = new ArrayList<FullScreenAd>();
+        fullScreenAds.add(new AdBuddizFullScreenAd());
+        fullScreenAds.add(new AdMobFullScreenAd());
+        
+        Collections.shuffle(fullScreenAds);
+        for (FullScreenAd fullScreenAd : fullScreenAds) {
+            boolean shown = fullScreenAd.show();
+            if (shown) {
+                break;
             }
-        } else {
-            if (AdBuddiz.isReadyToShowAd(this)) {
-                AdBuddiz.showAd(this);
+        }
+    }
+    
+    interface FullScreenAd {
+        public boolean show();
+    }
+    
+    private class AdMobFullScreenAd implements FullScreenAd {
+        public boolean show() { 
+            if (mAdMobInterstitialAd != null && mAdMobInterstitialAd.isLoaded()) {
+                mAdMobInterstitialAd.show();
+                return true;
             }
+            return false;
+        }
+    }
+    
+    private class AdBuddizFullScreenAd implements FullScreenAd {
+        public boolean show() {
+            if (AdBuddiz.isReadyToShowAd(MainActivity.this)) {
+                AdBuddiz.showAd(MainActivity.this);
+                return true;
+            }
+            return false;
         }
     }
     
@@ -282,11 +309,11 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
         
-        if (mBannerAdView == null) {
-            mBannerAdView = new AdView(this);
-            mBannerAdView.setAdSize(AdSize.SMART_BANNER);
-            mBannerAdView.setAdUnitId(getString(R.string.banner_ad_unit_id));
-            mBannerAdView.setAdListener(new AdListener() {
+        if (mAdMobBannerAdView == null) {
+            mAdMobBannerAdView = new AdView(this);
+            mAdMobBannerAdView.setAdSize(AdSize.SMART_BANNER);
+            mAdMobBannerAdView.setAdUnitId(getString(R.string.banner_ad_unit_id));
+            mAdMobBannerAdView.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded()
                 {
@@ -296,14 +323,15 @@ public class MainActivity extends ActionBarActivity {
                         if (parent != null) {
                             int index = parent.indexOfChild(stubView);
                             parent.removeView(stubView);
-                            parent.addView(mBannerAdView, index);
+                            parent.addView(mAdMobBannerAdView, index);
                         }
                     }
                 }
                 @Override
                 public void onAdFailedToLoad(int errorCode)
                 {
-                    mBannerAdView = null;
+                    // Set to null so it will be re-initialized the next time
+                    mAdMobBannerAdView = null;
                 }
             });
             AdRequest bannerAdRequest = new AdRequest.Builder()
@@ -311,25 +339,39 @@ public class MainActivity extends ActionBarActivity {
                 .addTestDevice("AFF55E9917949EF5CDAB182729BC72A1")
                 .addTestDevice("04CEF367A9A9433242C8C8DCF41D13BC")
                 .build();
-            mBannerAdView.loadAd(bannerAdRequest);
+            mAdMobBannerAdView.loadAd(bannerAdRequest);
         }
-
-        if (mInterstitialAd == null) {
-            mInterstitialAd = new InterstitialAd(this);
-            mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-            mInterstitialAd.setAdListener(new AdListener() {
+        
+        initAdMobInterstitial();
+    }
+    
+    private void initAdMobInterstitial() {
+        if (mAdMobInterstitialAd == null) {
+            mAdMobInterstitialAd = new InterstitialAd(this);
+            mAdMobInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+            mAdMobInterstitialAd.setAdListener(new AdListener() {
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     // Set to null so it will be re-initialized the next time
-                    mInterstitialAd = null;
+                    mAdMobInterstitialAd = null;
+                }
+                @Override
+                public void onAdOpened() {
+                    loadAdMobInterstitial();
                 }
             });
+            loadAdMobInterstitial();
+        }
+    }
+    
+    private void loadAdMobInterstitial() {
+        if (mAdMobInterstitialAd != null) {
             AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("AFF55E9917949EF5CDAB182729BC72A1")
                 .addTestDevice("04CEF367A9A9433242C8C8DCF41D13BC")
                 .build();
-            mInterstitialAd.loadAd(adRequest);
+            mAdMobInterstitialAd.loadAd(adRequest);
         }
     }
 }
