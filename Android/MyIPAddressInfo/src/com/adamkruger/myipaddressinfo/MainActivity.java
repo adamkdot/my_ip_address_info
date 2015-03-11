@@ -263,7 +263,7 @@ public class MainActivity extends ActionBarActivity {
     private int mFullScreenAdCounter = 0;
     private void showFullScreenAd() {
         mFullScreenAdCounter++;
-        if (mFullScreenAdCounter % 2 != 0) {
+        if (mFullScreenAdCounter % 3 != 0) {
             return;
         }
         
@@ -288,6 +288,7 @@ public class MainActivity extends ActionBarActivity {
         public boolean show() { 
             if (mAdMobInterstitialAd != null && mAdMobInterstitialAd.isLoaded()) {
                 mAdMobInterstitialAd.show();
+                reinitAdMobInterstitial();
                 return true;
             }
             return false;
@@ -355,17 +356,7 @@ public class MainActivity extends ActionBarActivity {
                     // Set to null so it will be re-initialized the next time
                     mAdMobInterstitialAd = null;
                 }
-                @Override
-                public void onAdOpened() {
-                    loadAdMobInterstitial();
-                }
             });
-            loadAdMobInterstitial();
-        }
-    }
-    
-    private void loadAdMobInterstitial() {
-        if (mAdMobInterstitialAd != null) {
             AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("AFF55E9917949EF5CDAB182729BC72A1")
@@ -373,5 +364,10 @@ public class MainActivity extends ActionBarActivity {
                 .build();
             mAdMobInterstitialAd.loadAd(adRequest);
         }
+    }
+    
+    private void reinitAdMobInterstitial() {
+        mAdMobInterstitialAd = null;
+        initAdMobInterstitial();
     }
 }
