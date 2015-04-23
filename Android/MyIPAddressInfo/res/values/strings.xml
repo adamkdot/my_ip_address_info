@@ -39,5 +39,17 @@
     <string name="geoip_provider_settings_radio_auto">Automatic</string>
     <string name="geoip_provider_settings_radio_freegeoipdotnet">freegeoip.net</string>
     <string name="geoip_provider_settings_radio_telizedotcom">Telize</string>
+    <string name="network_diagnostics_title">Test Network Connection</string>
+    <string name="network_diagnostics_choice_all_tests">Run all tests</string>
+    <string name="network_diagnostics_choice_small_download">Small download test (100KB)</string>
+    <string name="network_diagnostics_choice_medium_download">Medium download test (1MB)</string>
+    <string name="network_diagnostics_choice_large_download">Large download test (10MB)</string>
+    <string-array name="network_diagnostics_tests">
+        <item>@string/network_diagnostics_choice_all_tests</item>
+        <item>@string/network_diagnostics_choice_small_download</item>
+        <item>@string/network_diagnostics_choice_medium_download</item>
+        <item>@string/network_diagnostics_choice_large_download</item>
+    </string-array>
+    <string name="network_diagnostics_start">Start</string>
 
 </resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Adam Kruger
+ * Copyright (c) 2015 Adam Kruger
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,14 +37,34 @@ public class AsyncHTTPRequest extends AsyncTask<String, String, String> {
     interface RequestTaskCaller {
         void onPreExecute();
 
-        void onPostExecute(String result, long elapsedTime, boolean timedOut);
+        void onPostExecute(Result result);
+    }
+    
+    public class Result {
+        final public String mResponseBody;
+        final public int mExpectedContentLength;
+        final public long mStartTime;
+        final public long mElapsedTime;
+        final public boolean mFailed;
+        final public boolean mTimedOut;
+        public Result(String responseBody, int expectedContentLength, long startTime, long elapsedTime, boolean failed, boolean timedOut) {
+            mResponseBody = responseBody;
+            mExpectedContentLength = expectedContentLength;
+            mStartTime = startTime;
+            mElapsedTime = elapsedTime;
+            mFailed = failed;
+            mTimedOut = timedOut;
+        }
     }
 
     static final int CONNECTION_TIMEOUT_SECONDS = 20;
     static final int READ_TIMEOUT_SECONDS = 10;
 
+    private long mStartTime = 0;
     private long mElapsedTime = 0;
+    private boolean mFailed = true;
     private boolean mTimedOut = false;
+    private int mExpectedContentLength = 0;
     private WeakReference<RequestTaskCaller> mCallerWeakRef;
     private Proxy mProxySettings;
 
@@ -58,17 +78,20 @@ public class AsyncHTTPRequest extends AsyncTask<String, String, String> {
         URL url = null;
         HttpURLConnection httpUrlConnection = null;
         StringBuilder responseStringBuilder = new StringBuilder();
+        mStartTime = System.currentTimeMillis();
         long startTime = SystemClock.elapsedRealtime();
         try {
             url = new URL(uri[0]);
             httpUrlConnection = (HttpURLConnection) url.openConnection(mProxySettings);
             httpUrlConnection.setConnectTimeout(CONNECTION_TIMEOUT_SECONDS * 1000);
             httpUrlConnection.setReadTimeout(READ_TIMEOUT_SECONDS * 1000);
+            mExpectedContentLength = httpUrlConnection.getContentLength();
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpUrlConnection.getInputStream()));
             String line = null;
             while ((line = reader.readLine()) != null) {
                 responseStringBuilder.append(line + "\n");
             }
+            mFailed = false;
         } catch (SocketTimeoutException e) {
             mTimedOut = true;
             // return empty string
@@ -98,7 +121,7 @@ public class AsyncHTTPRequest extends AsyncTask<String, String, String> {
         super.onPostExecute(result);
         RequestTaskCaller caller = mCallerWeakRef.get();
         if (caller != null) {
-            caller.onPostExecute(result, mElapsedTime, mTimedOut);
+            caller.onPostExecute(new Result(result, mExpectedContentLength, mStartTime, mElapsedTime, mFailed, mTimedOut));
         }
     }
 }

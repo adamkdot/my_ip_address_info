@@ -30,6 +30,8 @@ import java.util.Locale;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.adamkruger.myipaddressinfo.AsyncHTTPRequest.Result;
+
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -273,7 +275,7 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
         }
 
         @Override
-        public void onPostExecute(String result, long elapsedTime, boolean timedOut) {
+        public void onPostExecute(Result result) {
             if (getActivity() == null) {
                 return;
             }
@@ -285,9 +287,9 @@ public class IPAddressInfoFragment extends Fragment implements OnClickListener {
             mRegion = "";
             mLatLong = "";
 
-            mLastUpdateTimedOut = timedOut;
-            mLastUpdateSucceeded = processIPAddressInfoResponse(result);
-            mLastUpdateElapsedTimeMs = elapsedTime;
+            mLastUpdateTimedOut = result.mTimedOut;
+            mLastUpdateSucceeded = processIPAddressInfoResponse(result.mResponseBody);
+            mLastUpdateElapsedTimeMs = result.mElapsedTime;
             mLastUpdateTime = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault()).format(new Date());
 
             // Attempt to post onRequestCompleted so that this asyncTask can

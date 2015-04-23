@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Adam Kruger
+ * Copyright (c) 2015 Adam Kruger
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
-import com.purplebrain.adbuddiz.sdk.AdBuddiz;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -52,6 +51,7 @@ public class MainActivity extends ActionBarActivity {
 
     private static final String TAG_IP_ADDRESS_INFO_FRAGMENT = "ip_address_info_fragment";
     private IPAddressInfoFragment mIPAddressInfoFragment;
+    private NetworkDiagnosticsFragment mNetworkDiagnosticsFragment;
     private NetworkInfoFragment mNetworkInfoFragment;
     private ProxySettingsFragment mProxySettingsFragment;
     private GeoIPProviderSettingsFragment mGeoIPProviderSettingsFragment;
@@ -128,13 +128,19 @@ public class MainActivity extends ActionBarActivity {
         // corresponding to the FragmentPagerAdapter's SetPages call below
         mNetworkInfoFragment = (NetworkInfoFragment) fragmentManager.findFragmentByTag("android:switcher:"
                 + R.id.other_info_container + ":" + 0);
-        mProxySettingsFragment = (ProxySettingsFragment) fragmentManager.findFragmentByTag("android:switcher:"
+        mNetworkDiagnosticsFragment = (NetworkDiagnosticsFragment) fragmentManager.findFragmentByTag("android:switcher:"
                 + R.id.other_info_container + ":" + 1);
-        mGeoIPProviderSettingsFragment = (GeoIPProviderSettingsFragment) fragmentManager.findFragmentByTag("android:switcher:"
+        mProxySettingsFragment = (ProxySettingsFragment) fragmentManager.findFragmentByTag("android:switcher:"
                 + R.id.other_info_container + ":" + 2);
+        mGeoIPProviderSettingsFragment = (GeoIPProviderSettingsFragment) fragmentManager.findFragmentByTag("android:switcher:"
+                + R.id.other_info_container + ":" + 3);
 
         if (mNetworkInfoFragment == null) {
             mNetworkInfoFragment = new NetworkInfoFragment();
+        }
+
+        if (mNetworkDiagnosticsFragment == null) {
+            mNetworkDiagnosticsFragment = new NetworkDiagnosticsFragment();
         }
 
         if (mProxySettingsFragment == null) {
@@ -146,8 +152,8 @@ public class MainActivity extends ActionBarActivity {
         }
 
         mAdditionalInfoPagerAdapter = new AdditionalInfoFragmentPagerAdapter(fragmentManager);
-        mAdditionalInfoPagerAdapter.SetPages(new Fragment[] { mNetworkInfoFragment, mProxySettingsFragment,
-                mGeoIPProviderSettingsFragment });
+        mAdditionalInfoPagerAdapter.SetPages(new Fragment[] { mNetworkInfoFragment, mNetworkDiagnosticsFragment,
+                mProxySettingsFragment, mGeoIPProviderSettingsFragment });
         mAdditionalInfoPager.setAdapter(mAdditionalInfoPagerAdapter);
         mAdditionalInfoPageIndicator.setViewPager(mAdditionalInfoPager);
         mAdditionalInfoPageIndicator.setOnPageChangeListener(new AdditionalInfoPageChangeListener(this));
@@ -185,9 +191,6 @@ public class MainActivity extends ActionBarActivity {
                         }
                     }
                 });
-        
-        AdBuddiz.setPublisherKey(getString(R.string.ad_buddiz_publisher_key));
-        AdBuddiz.cacheAds(this);
     }
     
     @Override
@@ -261,14 +264,13 @@ public class MainActivity extends ActionBarActivity {
     }
     
     private int mFullScreenAdCounter = 0;
-    private void showFullScreenAd() {
+    public void showFullScreenAd() {
         mFullScreenAdCounter++;
         if (mFullScreenAdCounter % 3 != 0) {
             return;
         }
         
         ArrayList<FullScreenAd> fullScreenAds = new ArrayList<FullScreenAd>();
-        fullScreenAds.add(new AdBuddizFullScreenAd());
         fullScreenAds.add(new AdMobFullScreenAd());
         
         Collections.shuffle(fullScreenAds);
@@ -289,16 +291,6 @@ public class MainActivity extends ActionBarActivity {
             if (mAdMobInterstitialAd != null && mAdMobInterstitialAd.isLoaded()) {
                 mAdMobInterstitialAd.show();
                 reinitAdMobInterstitial();
-                return true;
-            }
-            return false;
-        }
-    }
-    
-    private class AdBuddizFullScreenAd implements FullScreenAd {
-        public boolean show() {
-            if (AdBuddiz.isReadyToShowAd(MainActivity.this)) {
-                AdBuddiz.showAd(MainActivity.this);
                 return true;
             }
             return false;
